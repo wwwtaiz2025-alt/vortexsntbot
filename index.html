@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vortex (VTX) - التعدين</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0e1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            background-image: radial-gradient(circle at 20% 30%, #1a2240 0%, #0b0e1a 80%);
+        }
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(18, 24, 48, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 36px;
+            padding: 24px 20px 30px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        /* رأس الصفحة */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { font-size: 24px; font-weight: 800; color: #f5c842; letter-spacing: 1px; text-shadow: 0 0 20px rgba(245, 200, 66, 0.3); }
+        .logo span { color: #fff; font-weight: 300; }
+        .user-badge {
+            background: #20284a;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: #b0c4f0;
+            border: 1px solid #2f3a66;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .user-badge::before { content: "👤"; font-size: 14px; }
+
+        /* عداد المستخدمين */
+        .counter-box {
+            background: linear-gradient(145deg, #121a30, #070b14);
+            border-radius: 24px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #26315a;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .counter-box .label { font-size: 13px; color: #8892b0; letter-spacing: 2px; text-transform: uppercase; }
+        .counter-box .number {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f5c842, #d49b1a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        .counter-box .sub { font-size: 14px; color: #5b6a8f; margin-top: 4px; }
+        .counter-box .target-bar {
+            width: 100%;
+            height: 6px;
+            background: #1f284a;
+            border-radius: 10px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .counter-box .target-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f5c842, #f5a623);
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        }
+
+        /* بطاقة التعدين */
+        .mine-card {
+            background: linear-gradient(145deg, #131d3a, #0c1124);
+            border-radius: 28px;
+            padding: 20px 16px;
+            margin: 16px 0;
+            border: 1px solid #26315a;
+        }
+        .mine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .mine-header h2 { font-size: 18px; font-weight: 600; color: #fff; }
+        .mine-header .points {
+            background: #1f2a50;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f5c842;
+        }
+        .progress-text { font-size: 13px; color: #8892b0; margin-bottom: 6px; }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a2340;
+            border-radius: 10px;
+            margin: 8px 0 16px;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f5c842, #ff7b00);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .click-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 60px;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(145deg, #f5c842, #d49b1a);
+            color: #0b0e1a;
+            box-shadow: 0 8px 0 #7a5c10, 0 12px 30px rgba(245, 200, 66, 0.25);
+            transition: all 0.08s linear;
+            cursor: pointer;
+            letter-spacing: 1px;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        .click-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #7a5c10;
+        }
+        .click-btn:disabled {
+            opacity: 0.4;
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #7a5c10;
+            pointer-events: none;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0 16px;
+        }
+        .info-item {
+            background: #121a30;
+            padding: 12px 6px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #1f284a;
+        }
+        .info-item .val { font-size: 18px; font-weight: 700; color: #f5c842; }
+        .info-item .lbl { font-size: 11px; color: #6a7aa0; margin-top: 4px; }
+
+        /* أزرار الإجراءات */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0 6px;
+        }
+        .actions button {
+            flex: 1;
+            padding: 12px 6px;
+            border-radius: 40px;
+            border: 1px solid #2f3a66;
+            background: transparent;
+            color: #b0c4f0;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #121a30;
+        }
+        .actions button:active { transform: scale(0.95); background: #1f284a; }
+        .actions .buy-btn { border-color: #f5c842; color: #f5c842; }
+
+        /* حالة الانتظار */
+        .waiting-msg {
+            text-align: center;
+            padding: 30px 10px;
+            color: #8892b0;
+        }
+        .waiting-msg .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+        .waiting-msg h3 { color: #f5c842; margin-bottom: 8px; }
+
+        /* رسالة الخطأ/التنبيه */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f1f3a;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 60px;
+            border: 1px solid #f5c842;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- الرأس -->
+        <div class="header">
+            <div class="logo">VORTEX <span>| VTX</span></div>
+            <div class="user-badge" id="usernameDisplay">@{{USERNAME}}</div>
+        </div>
+
+        <!-- عداد الـ 20 ألف -->
+        <div class="counter-box">
+            <div class="label">👥 إجمالي المسجلين</div>
+            <div class="number" id="totalUsers">{{TOTAL_USERS}}</div>
+            <div class="sub">الهدف: 20,000 مستخدم</div>
+            <div class="target-bar"><div class="fill" id="targetFill" style="width: {{PROGRESS}}%;"></div></div>
+        </div>
+
+        <!-- منطقة التعدين أو الانتظار -->
+        <div id="miningArea">
+            <!-- سيتم التحكم بها عبر جافا سكريبت -->
+        </div>
+
+        <!-- معلومات إضافية -->
+        <div class="info-grid">
+            <div class="info-item"><div class="val" id="pointsDisplay">{{POINTS}}</div><div class="lbl">نقاطك</div></div>
+            <div class="info-item"><div class="val" id="clicksLeft">{{MAX_CLICKS}}</div><div class="lbl">الضغطات المتبقية</div></div>
+        </div>
+
+        <!-- أزرار إضافية -->
+        <div class="actions">
+            <button id="boostBtn" class="buy-btn">⚡ شراء هامش</button>
+            <button id="refreshBtn">🔄 تحديث</button>
+        </div>
+    </div>
+
+    <!-- رسالة تنبيه -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // --- المتغيرات الأساسية ---
+        const TELEGRAM_ID = {{TELEGRAM_ID}};
+        let miningOpen = {{MINING_OPEN}} === 'true';
+        let currentPoints = {{POINTS}};
+        let maxClicks = {{MAX_CLICKS}};
+        let clicksUsed = {{CLICKS_USED}};
+
+        // --- عناصر DOM ---
+        const miningArea = document.getElementById('miningArea');
+        const totalUsersEl = document.getElementById('totalUsers');
+        const targetFill = document.getElementById('targetFill');
+        const pointsDisplay = document.getElementById('pointsDisplay');
+        const clicksLeft = document.getElementById('clicksLeft');
+        const toast = document.getElementById('toast');
+
+        // --- دالة عرض الرسائل (Toast) ---
+        function showToast(msg, isError = false) {
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            toast.style.borderColor = isError ? '#ff4444' : '#f5c842';
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        // --- دالة تحديث الواجهة من السيرفر ---
+        async function fetchStatus() {
+            try {
+                const res = await fetch(`/api/status?telegram_id=${TELEGRAM_ID}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'خطأ');
+                
+                // تحديث البيانات
+                totalUsersEl.textContent = data.total_users;
+                const progress = Math.min((data.total_users / 20000) * 100, 100);
+                targetFill.style.width = progress + '%';
+
+                currentPoints = data.points;
+                maxClicks = data.max_clicks;
+                clicksUsed = data.clicks_used;
+                miningOpen = data.mining_open;
+
+                pointsDisplay.textContent = currentPoints;
+                clicksLeft.textContent = maxClicks - clicksUsed;
+
+                // تحديث واجهة التعدين
+                renderMiningUI();
+                
+                return data;
+            } catch (e) {
+                showToast('فشل الاتصال بالسيرفر', true);
+                return null;
+            }
+        }
+
+        // --- دالة رسم واجهة التعدين ---
+        function renderMiningUI() {
+            const remaining = maxClicks - clicksUsed;
+            const progressClick = Math.min((clicksUsed / maxClicks) * 100, 100);
+
+            if (!miningOpen) {
+                miningArea.innerHTML = `
+                    <div class="waiting-msg">
+                        <span class="icon">⏳</span>
+                        <h3>التعدين لم يفتح بعد</h3>
+                        <p>سيتم فتحه تلقائياً عند اكتمال 20,000 مستخدم</p>
+                        <div style="margin-top:12px;font-size:12px;color:#5b6a8f;">عدد المسجلين: ${totalUsersEl.textContent}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            if (remaining <= 0) {
+                miningArea.innerHTML = `
+                    <div class="waiting-msg">
+                        <span class="icon">🏁</span>
+                        <h3>استنفذت كل ضغطاتك</h3>
+                        <p>اشتري هامشاً إضافياً لمواصلة التعدين</p>
+                        <button onclick="document.getElementById('boostBtn').click()" style="margin-top:16px;padding:12px 30px;border-radius:40px;border:1px solid #f5c842;background:transparent;color:#f5c842;font-weight:bold;">شراء هامش</button>
+                    </div>
+                `;
+                return;
+            }
+
+            miningArea.innerHTML = `
+                <div class="mine-card">
+                    <div class="mine-header">
+                        <h2>⛏️ التعدين</h2>
+                        <span class="points">+${currentPoints}</span>
+                    </div>
+                    <div class="progress-text">${clicksUsed} / ${maxClicks} ضغطة</div>
+                    <div class="progress-bar"><div class="fill" id="clickProgressFill" style="width: ${progressClick}%;"></div></div>
+                    <button class="click-btn" id="clickBtn">اضغط للتعدين</button>
+                    <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px;color:#6a7aa0;">
+                        <span>⚡ متبقي: ${remaining}</span>
+                        <span>⏱️ 3 ثوان بين الضغطات</span>
+                    </div>
+                </div>
+            `;
+
+            // إضافة حدث الضغط
+            document.getElementById('clickBtn').addEventListener('click', handleClick);
+        }
+
+        // --- دالة الضغط على زر التعدين ---
+        async function handleClick() {
+            const btn = document.getElementById('clickBtn');
+            if (!btn || btn.disabled) return;
+
+            btn.disabled = true;
+            btn.textContent = '⏳ جارٍ...';
+
+            try {
+                const res = await fetch('/api/click', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegram_id: TELEGRAM_ID })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    if (res.status === 429) {
+                        showToast(`⏳ انتظر ${Math.ceil(data.wait || 3)} ثوانٍ`, true);
+                    } else {
+                        showToast(data.message || 'خطأ', true);
+                    }
+                    btn.disabled = false;
+                    btn.textContent = 'اضغط للتعدين';
+                    return;
+                }
+
+                if (data.success) {
+                    // تحديث البيانات محلياً
+                    currentPoints = data.new_points;
+                    clicksUsed = data.clicks_used;
+                    maxClicks = data.max_clicks;
+                    pointsDisplay.textContent = currentPoints;
+                    clicksLeft.textContent = maxClicks - clicksUsed;
+                    showToast('✅ +1 نقطة');
+                    renderMiningUI(); // إعادة رسم الواجهة لتحديث شريط التقدم
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (e) {
+                showToast('حدث خطأ في الشبكة', true);
+            }
+
+            // إعادة تمكين الزر بعد فترة قصيرة (للتأكد)
+            setTimeout(() => {
+                const newBtn = document.getElementById('clickBtn');
+                if (newBtn) { newBtn.disabled = false; newBtn.textContent = 'اضغط للتعدين'; }
+            }, 500);
+        }
+
+        // --- دالة شراء الهامش ---
+        document.getElementById('boostBtn').addEventListener('click', async function() {
+            const extra = prompt('كم ضغطة إضافية تريد شراءها؟ (أدخل رقماً، مثلاً 500)');
+            if (!extra || isNaN(extra) || parseInt(extra) <= 0) return;
+
+            try {
+                const res = await fetch('/api/buy_boost', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegram_id: TELEGRAM_ID, extra_clicks: parseInt(extra) })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message);
+                    fetchStatus(); // تحديث كامل
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (e) {
+                showToast('خطأ في الاتصال', true);
+            }
+        });
+
+        // --- زر التحديث اليدوي ---
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            showToast('جاري التحديث...');
+            fetchStatus();
+        });
+
+        // --- التحديث التلقائي كل 5 ثوانٍ (للعداد والرصيد) ---
+        setInterval(fetchStatus, 5000);
+
+        // --- تشغيل التطبيق ---
+        renderMiningUI();
+        fetchStatus();
+    </script>
+</body>
+              </html>
