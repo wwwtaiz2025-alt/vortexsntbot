@@ -4,6 +4,7 @@ const cors = require('cors');
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
@@ -31,10 +32,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('❌ فشل الاتصال:', err));
 
 // -------------------- نماذج MongoDB --------------------
-const CounterSchema = new mongoose.Schema({
-    _id: String,
-    count: { type: Number, default: 0 }
-});
+const CounterSchema = new mongoose.Schema({ _id: String, count: { type: Number, default: 0 } });
 const Counter = mongoose.model('Counter', CounterSchema);
 
 const UserSchema = new mongoose.Schema({
@@ -57,16 +55,17 @@ const User = mongoose.model('User', UserSchema);
 
 const SettingsSchema = new mongoose.Schema({
     _id: String,
-    mining_open: { type: Boolean, default: false }
+    mining_open: { type: Boolean, default: false },
+    vtx_price: { type: Number, default: 0.1387 }
 });
 const Settings = mongoose.model('Settings', SettingsSchema);
 
 const PurchaseSchema = new mongoose.Schema({
     user_id: Number,
     username: String,
-    amount: Number, // المبلغ بالـ USDT
-    txid: String, // رقم المعاملة
-    status: { type: String, default: 'pending' }, // pending, approved, rejected
+    amount: Number,
+    txid: String,
+    status: { type: String, default: 'pending' },
     created_at: { type: Date, default: Date.now }
 });
 const Purchase = mongoose.model('Purchase', PurchaseSchema);
@@ -79,7 +78,8 @@ const generateFingerprint = (ip, ua, id) => {
 // -------------------- إعدادات Express --------------------
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // -------------------- [1] الصفحة الرئيسية (Mini-App) --------------------
 app.get('/app', async (req, res) => {
@@ -117,17 +117,16 @@ app.get('/app', async (req, res) => {
             // نظام الإحالات
             let referralBonus = 0;
             let referrer = null;
-            const refCode = req.query.startapp || req.query.ref; // من رابط الدعوة
+            const refCode = req.query.startapp || req.query.ref; 
             if (refCode) {
                 const referrerUser = await User.findOne({ referral_code: refCode });
                 if (referrerUser) {
                     referrer = referrerUser.telegram_id;
-                    // إضافة نقاط للمُحيل
                     await User.findOneAndUpdate(
                         { telegram_id: referrerUser.telegram_id },
                         { $inc: { points: 10, referrals_count: 1 } }
                     );
-                    referralBonus = 5; // مكافأة المدعو
+                    referralBonus = 5;
                 }
             }
 
@@ -137,7 +136,6 @@ app.get('/app', async (req, res) => {
                 { new: true, upsert: true }
             );
 
-            // إنشاء كود إحالة فريد (نفس المعرف)
             const referral_code = `VTX_${telegram_id}`;
 
             user = new User({
@@ -147,7 +145,7 @@ app.get('/app', async (req, res) => {
                 ip_address: ip,
                 referral_code: referral_code,
                 referred_by: referrer,
-                points: referralBonus // المكافأة الافتتاحية
+                points: referralBonus
             });
             await user.save();
 
@@ -166,6 +164,7 @@ app.get('/app', async (req, res) => {
 
         const settings = await Settings.findById('main_config');
         const miningOpen = settings?.mining_open || false;
+        const currentPrice = settings?.vtx_price || 0.1387;
         const counter = await Counter.findById('total_users');
         const totalUsers = counter?.count || 0;
 
@@ -214,7 +213,8 @@ app.get('/api/status', async (req, res) => {
             clicks_used: user.clicks_used,
             progress: Math.min((user.clicks_used / user.max_clicks) * 100, 100),
             referrals_count: user.referrals_count || 0,
-            referral_code: user.referral_code
+            referral_code: user.referral_code,
+            vtx_price: settings?.vtx_price || 0.1387
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -294,12 +294,11 @@ app.post('/api/buy_boost', async (req, res) => {
 app.post('/api/purchase', async (req, res) => {
     try {
         const { telegram_id, amount, txid } = req.body;
-        if (!amount || !txid) return res.json({ success: false, message: 'بيانات ناقصة' });
+        if (!amount || !txid || amount <= 0) return res.json({ success: false, message: 'بيانات ناقصة' });
 
         const user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         if (!user) return res.json({ success: false, message: 'غير مسجل' });
 
-        // التحقق من عدم تكرار المعاملة
         const existing = await Purchase.findOne({ txid });
         if (existing) return res.json({ success: false, message: 'رقم المعاملة مستخدم مسبقاً' });
 
@@ -320,35 +319,25 @@ app.post('/api/purchase', async (req, res) => {
 
 // -------------------- [6] لوحة الإدارة (Admin Panel) --------------------
 // صفحة تسجيل الدخول
-app.get('/admin', async (req, res) => {
+app.get('/admin', (req, res) => {
     const html = `
     <!DOCTYPE html>
-    <html>
-    <head><meta charset="UTF-8"><title>Vortex Admin</title>
+    <html><head><meta charset="UTF-8"><title>Vortex Admin</title>
     <style>body{background:#0b0e1a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;}
-    .box{background:#161f3a;padding:40px;border-radius:20px;border:1px solid #f5c842;}
+    .box{background:#161f3a;padding:40px;border-radius:20px;border:1px solid #f5c842;min-width:300px;}
     input,button{display:block;width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #2f3a66;background:#0d1428;color:#fff;}
     button{background:#f5c842;color:#000;font-weight:bold;cursor:pointer;}
-    </style>
-    </head>
-    <body>
-    <div class="box">
-    <h2 style="color:#f5c842;">🔐 Vortex Admin</h2>
+    </style></head>
+    <body><div class="box"><h2 style="color:#f5c842;">🔐 Vortex Admin</h2>
     <form action="/admin/login" method="post">
     <input type="password" name="password" placeholder="كلمة المرور" required>
     <button type="submit">دخول</button>
-    </form>
-    </div>
-    </body>
-    </html>
-    `;
+    </form></div></body></html>`;
     res.send(html);
 });
 
-app.use(express.urlencoded({ extended: true }));
 app.post('/admin/login', (req, res) => {
     if (req.body.password === process.env.ADMIN_PASSWORD) {
-        // تعيين كوكي أو جلسة بسيطة (نستخدم كوكي لمدة ساعة)
         res.cookie('admin_auth', 'true', { maxAge: 3600000, httpOnly: true });
         res.redirect('/admin/dashboard');
     } else {
@@ -356,12 +345,11 @@ app.post('/admin/login', (req, res) => {
     }
 });
 
-// التحقق من المصادقة (Middleware بسيط)
+// التحقق من المصادقة
 const authMiddleware = (req, res, next) => {
     if (req.cookies?.admin_auth === 'true') return next();
     res.redirect('/admin');
 };
-app.use(require('cookie-parser')());
 
 // لوحة التحكم الرئيسية
 app.get('/admin/dashboard', authMiddleware, async (req, res) => {
@@ -370,48 +358,55 @@ app.get('/admin/dashboard', authMiddleware, async (req, res) => {
         const totalPoints = await User.aggregate([{ $group: { _id: null, total: { $sum: '$points' } } }]);
         const pendingPurchases = await Purchase.find({ status: 'pending' });
         const users = await User.find({}, 'telegram_id username points referral_code referrals_count').limit(50);
+        const settings = await Settings.findById('main_config');
+        const currentPrice = settings?.vtx_price || 0.1387;
 
         let html = `
         <!DOCTYPE html>
-        <html>
-        <head><meta charset="UTF-8"><title>Vortex Admin Dashboard</title>
+        <html><head><meta charset="UTF-8"><title>Vortex Admin</title>
         <style>
-        body{background:#0b0e1a;color:#e0e0e0;font-family:sans-serif;padding:20px;}
+        body{background:#0b0e1a;color:#e0e0e0;font-family:sans-serif;padding:20px;direction:rtl;}
         .container{max-width:1200px;margin:auto;}
         .card{background:#161f3a;padding:20px;border-radius:16px;border:1px solid #2f3a66;margin:10px 0;}
         table{width:100%;border-collapse:collapse;}
-        th,td{padding:10px;border-bottom:1px solid #2f3a66;text-align:left;}
+        th,td{padding:10px;border-bottom:1px solid #2f3a66;text-align:right;}
         th{color:#f5c842;}
         .btn{background:#f5c842;color:#000;border:none;padding:6px 14px;border-radius:20px;cursor:pointer;}
         .btn-danger{background:#ff4444;color:#fff;}
         .btn-success{background:#44bb44;color:#fff;}
+        .btn-primary{background:#1a8cff;color:#fff;}
         .badge{padding:4px 12px;border-radius:30px;font-size:12px;}
         .badge-pending{background:#f5a623;color:#000;}
         .badge-approved{background:#44bb44;color:#fff;}
         .badge-rejected{background:#ff4444;color:#fff;}
-        </style>
-        </head>
-        <body>
-        <div class="container">
+        input{background:#0d1428;border:1px solid #2f3a66;padding:8px;border-radius:8px;color:#fff;}
+        .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+        </style></head>
+        <body><div class="container">
         <h1 style="color:#f5c842;">⚡ Vortex Admin</h1>
+        
         <div class="card">
-        <h3>📊 الإحصائيات</h3>
-        <p>👥 المستخدمين: ${totalUsers}</p>
-        <p>⭐ إجمالي النقاط: ${totalPoints[0]?.total || 0}</p>
-        <p>🟡 طلبات الشراء المعلقة: ${pendingPurchases.length}</p>
+            <h3>📊 الإحصائيات</h3>
+            <p>👥 المستخدمين: ${totalUsers}</p>
+            <p>⭐ إجمالي النقاط: ${totalPoints[0]?.total || 0}</p>
+            <p>🟡 طلبات الشراء المعلقة: ${pendingPurchases.length}</p>
+            <p>💰 سعر VTX الحالي: <span style="color:#f5c842;font-weight:bold;">${currentPrice} USDT</span></p>
+        </div>
+
+        <div class="card">
+            <h3>💲 تحديث سعر العملة</h3>
+            <form action="/admin/set_price" method="post" class="flex">
+                <input type="number" step="0.0001" name="price" value="${currentPrice}" style="width:200px;">
+                <button type="submit" class="btn btn-primary">تحديث السعر</button>
+            </form>
         </div>
 
         <div class="card">
         <h3>🟡 طلبات الشراء (USDT)</h3>
         <table>
-        <tr><th>المستخدم</th><th>المبلغ</th><th>TXID</th><th>الحالة</th><th>إجراء</th></tr>
-        `;
+        <tr><th>المستخدم</th><th>المبلغ</th><th>TXID</th><th>الحالة</th><th>إجراء</th></tr>`;
         for (const p of pendingPurchases) {
-            html += `
-            <tr>
-            <td>${p.username}</td>
-            <td>${p.amount} USDT</td>
-            <td style="font-size:12px;word-break:break-all;">${p.txid}</td>
+            html += `<tr><td>${p.username}</td><td>${p.amount} USDT</td><td style="font-size:12px;word-break:break-all;">${p.txid}</td>
             <td><span class="badge badge-pending">قيد المراجعة</span></td>
             <td>
             <form action="/admin/approve_purchase" method="post" style="display:inline;">
@@ -422,50 +417,38 @@ app.get('/admin/dashboard', authMiddleware, async (req, res) => {
             <input type="hidden" name="purchase_id" value="${p._id}">
             <button class="btn btn-danger" type="submit">❌ رفض</button>
             </form>
-            </td>
-            </tr>
-            `;
+            </td></tr>`;
         }
-        html += `
-        </table>
-        </div>
+        html += `</table></div>
 
-        <div class="card">
-        <h3>👤 المستخدمون (آخر 50)</h3>
-        <table>
-        <tr><th>ID</th><th>اسم المستخدم</th><th>النقاط</th><th>كود الإحالة</th><th>مدعوين</th></tr>
-        `;
+        <div class="card"><h3>👤 المستخدمون (آخر 50)</h3>
+        <table><tr><th>ID</th><th>اسم المستخدم</th><th>النقاط</th><th>كود الإحالة</th><th>مدعوين</th></tr>`;
         for (const u of users) {
-            html += `
-            <tr>
-            <td>${u.telegram_id}</td>
-            <td>${u.username}</td>
-            <td>${u.points}</td>
-            <td>${u.referral_code}</td>
-            <td>${u.referrals_count || 0}</td>
-            </tr>
-            `;
+            html += `<tr><td>${u.telegram_id}</td><td>${u.username}</td><td>${u.points}</td><td>${u.referral_code}</td><td>${u.referrals_count || 0}</td></tr>`;
         }
-        html += `
-        </table>
-        </div>
+        html += `</table></div>
 
-        <div class="card">
-        <h3>📨 إرسال إشعار جماعي</h3>
+        <div class="card"><h3>📨 إرسال إشعار جماعي</h3>
         <form action="/admin/broadcast" method="post">
-        <textarea name="message" rows="3" style="width:100%;padding:10px;border-radius:8px;background:#0d1428;color:#fff;border:1px solid #2f3a66;" placeholder="أدخل الرسالة..."></textarea>
+        <textarea name="message" rows="3" style="width:100%;padding:10px;border-radius:8px;background:#0d1428;color:#fff;border:1px solid #2f3a66;"></textarea>
         <button class="btn" type="submit">إرسال للجميع</button>
-        </form>
-        </div>
+        </form></div>
         <a href="/admin/logout" style="color:#f5c842;">تسجيل الخروج</a>
-        </div>
-        </body>
-        </html>
-        `;
+        </div></body></html>`;
         res.send(html);
     } catch (e) {
         res.status(500).send('خطأ: ' + e.message);
     }
+});
+
+// تحديث السعر
+app.post('/admin/set_price', authMiddleware, async (req, res) => {
+    try {
+        const { price } = req.body;
+        if (!price || parseFloat(price) <= 0) return res.redirect('/admin/dashboard');
+        await Settings.findByIdAndUpdate('main_config', { vtx_price: parseFloat(price) }, { upsert: true });
+        res.redirect('/admin/dashboard');
+    } catch (e) { res.status(500).send('خطأ'); }
 });
 
 // تأكيد طلب شراء
@@ -474,22 +457,13 @@ app.post('/admin/approve_purchase', authMiddleware, async (req, res) => {
         const { purchase_id } = req.body;
         const purchase = await Purchase.findById(purchase_id);
         if (!purchase) return res.redirect('/admin/dashboard');
-        
-        // تحديث حالة الطلب
         purchase.status = 'approved';
         await purchase.save();
 
-        // إضافة نقاط للمستخدم (مثلاً 100 نقطة لكل 1 USDT، قابل للتعديل)
         const pointsToAdd = purchase.amount * 100;
-        await User.findOneAndUpdate(
-            { telegram_id: purchase.user_id },
-            { $inc: { points: pointsToAdd } }
-        );
-
+        await User.findOneAndUpdate({ telegram_id: purchase.user_id }, { $inc: { points: pointsToAdd } });
         res.redirect('/admin/dashboard');
-    } catch (e) {
-        res.status(500).send('خطأ: ' + e.message);
-    }
+    } catch (e) { res.status(500).send('خطأ'); }
 });
 
 app.post('/admin/reject_purchase', authMiddleware, async (req, res) => {
@@ -497,15 +471,11 @@ app.post('/admin/reject_purchase', authMiddleware, async (req, res) => {
         const { purchase_id } = req.body;
         await Purchase.findByIdAndUpdate(purchase_id, { status: 'rejected' });
         res.redirect('/admin/dashboard');
-    } catch (e) {
-        res.status(500).send('خطأ: ' + e.message);
-    }
+    } catch (e) { res.status(500).send('خطأ'); }
 });
 
-// إرسال إشعار جماعي (سيتم إرساله عبر تيليجرام لاحقاً)
 app.post('/admin/broadcast', authMiddleware, async (req, res) => {
     const { message } = req.body;
-    // تخزين الرسالة في قاعدة البيانات لإرسالها لاحقاً
     console.log(`📨 إشعار جماعي: ${message}`);
     res.redirect('/admin/dashboard');
 });
@@ -513,6 +483,11 @@ app.post('/admin/broadcast', authMiddleware, async (req, res) => {
 app.get('/admin/logout', (req, res) => {
     res.clearCookie('admin_auth');
     res.redirect('/admin');
+});
+
+// -------------------- مسار تجريبي --------------------
+app.get('/', (req, res) => {
+    res.send('🚀 مشروع Vortex يعمل بنجاح!');
 });
 
 // -------------------- تشغيل السيرفر --------------------
