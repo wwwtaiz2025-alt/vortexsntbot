@@ -9,205 +9,162 @@
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                            "outline-variant": "#4e4634",
-                            "outline": "#9a907b",
-                            "surface-container-low": "#181c20",
-                            "surface-tint": "#eec13c",
-                            "on-surface-variant": "#d1c5ae",
-                            "on-error-container": "#ffdad6",
-                            "inverse-surface": "#e0e2e8",
-                            "secondary": "#c4c5d7",
-                            "tertiary-fixed": "#dee2f7",
-                            "secondary-container": "#484b59",
-                            "on-secondary-fixed-variant": "#434654",
-                            "error-container": "#93000a",
-                            "on-tertiary-container": "#515667",
-                            "on-tertiary": "#2b3040",
-                            "on-tertiary-fixed-variant": "#414657",
-                            "on-secondary": "#2d303d",
-                            "surface-container-highest": "#323539",
-                            "primary": "#ffe7af",
-                            "on-surface": "#e0e2e8",
-                            "tertiary": "#e4e8fd",
-                            "surface-container-lowest": "#0b0f12",
-                            "surface-bright": "#36393e",
-                            "secondary-fixed-dim": "#c4c5d7",
-                            "surface-variant": "#323539",
-                            "inverse-primary": "#755b00",
-                            "on-tertiary-fixed": "#161b2a",
-                            "background": "#101417",
-                            "on-primary": "#3d2e00",
-                            "surface": "#101417",
-                            "secondary-fixed": "#e0e1f3",
-                            "on-primary-fixed": "#241a00",
-                            "primary-fixed-dim": "#eec13c",
-                            "on-primary-container": "#6c5400",
-                            "on-primary-fixed-variant": "#584400",
-                            "surface-container-high": "#272a2e",
-                            "surface-container": "#1c2024",
-                            "tertiary-container": "#c8cce1",
-                            "on-secondary-fixed": "#181b27",
-                            "error": "#ffb4ab",
-                            "inverse-on-surface": "#2d3135",
-                            "on-background": "#e0e2e8",
-                            "primary-fixed": "#ffe08f",
-                            "tertiary-fixed-dim": "#c1c6da",
-                            "on-secondary-container": "#b9bbcc",
-                            "primary-container": "#f5c842",
-                            "surface-dim": "#101417",
-                            "on-error": "#690005"
-                    },
-                    "borderRadius": {
-                            "DEFAULT": "0.25rem",
-                            "lg": "0.5rem",
-                            "xl": "0.75rem",
-                            "full": "9999px"
-                    },
-                    "spacing": {
-                            "stack-sm": "8px",
-                            "safe-area": "20px",
-                            "stack-lg": "32px",
-                            "gutter": "12px",
-                            "card-padding": "16px",
-                            "stack-md": "16px"
-                    },
-                    "fontFamily": {
-                            "label-caps": ["IBM Plex Sans", "sans-serif"],
-                            "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
-                            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
-                            "body-lg": ["Plus Jakarta Sans", "sans-serif"],
-                            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
-                            "body-sm": ["Plus Jakarta Sans", "sans-serif"]
-                    },
-                    "fontSize": {
-                            "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600" }],
-                            "display-lg-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
-                            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-                            "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
-                    }
-                }
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: {
+                "secondary-fixed": "#e0e1f3", "primary-fixed-dim": "#eec13c",
+                "on-secondary": "#2d303d", "on-primary-container": "#6c5400",
+                "on-background": "#e0e2e8", "inverse-primary": "#755b00",
+                "tertiary-fixed": "#dee2f7", "outline": "#9a907b",
+                "on-primary-fixed-variant": "#584400", "primary-container": "#f5c842",
+                "on-primary": "#3d2e00", "on-tertiary-container": "#515667",
+                "error": "#ffb4ab", "surface-container-high": "#272a2e",
+                "on-error-container": "#ffdad6", "on-surface": "#e0e2e8",
+                "surface": "#101417", "outline-variant": "#4e4634",
+                "on-error": "#690005", "inverse-on-surface": "#2d3135",
+                "surface-container-lowest": "#0b0f12", "surface-container-low": "#181c20",
+                "on-secondary-fixed": "#181b27", "surface-bright": "#36393e",
+                "on-secondary-fixed-variant": "#434654", "surface-container": "#1c2024",
+                "on-primary-fixed": "#241a00", "on-tertiary": "#2b3040",
+                "surface-variant": "#323539", "secondary-container": "#484b59",
+                "on-secondary-container": "#b9bbcc", "surface-container-highest": "#323539",
+                "on-surface-variant": "#d1c5ae", "background": "#101417",
+                "secondary-fixed-dim": "#c4c5d7", "tertiary-fixed-dim": "#c1c6da",
+                "primary-fixed": "#ffe08f", "surface-dim": "#101417",
+                "primary": "#ffe7af", "surface-tint": "#eec13c",
+                "tertiary-container": "#c8cce1", "tertiary": "#e4e8fd",
+                "inverse-surface": "#e0e2e8", "error-container": "#93000a",
+                "secondary": "#c4c5d7", "on-tertiary-fixed": "#161b2a",
+                "on-tertiary-fixed-variant": "#414657"
+            },
+            borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+            spacing: { "stack-md": "16px", "gutter": "12px", "stack-sm": "8px", "stack-lg": "32px", "safe-area": "20px", "card-padding": "16px" },
+            fontFamily: {
+                "label-caps": ["IBM Plex Sans", "sans-serif"],
+                "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+                "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+                "body-sm": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            fontSize: {
+                "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "600" }],
+                "display-lg-mobile": ["32px", { lineHeight: "38px", fontWeight: "700" }],
+                "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }]
             }
         }
-    </script>
+    }
+}
+</script>
 <style>
-        .glass-card { background: rgba(18, 22, 29, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(238, 193, 60, 0.15); }
-        .vortex-pulse { animation: pulse-gold 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        .green-pulse { animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse-gold { 0%, 100% { opacity: 1; text-shadow: 0 0 15px rgba(245, 200, 66, 0.5); } 50% { opacity: .7; text-shadow: 0 0 5px rgba(245, 200, 66, 0.2); } }
-        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
-        .gold-gradient { background: linear-gradient(135deg, #f5c842 0%, #eec13c 100%); }
-        .gold-glow { box-shadow: 0 0 20px rgba(238, 193, 60, 0.3); }
-        body { min-height: max(884px, 100dvh); }
-        #coin-container { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; z-index: 0; pointer-events: none; opacity: 0.4; mix-blend-mode: screen; }
-        .order-row-highlight { transition: background-color 0.4s ease; }
-        .update-flash { animation: flash-green 0.8s ease-out; }
-        @keyframes flash-green { 0% { background-color: rgba(74, 222, 128, 0.2); } 100% { background-color: transparent; } }
-        .referral-box { background: rgba(16, 20, 30, 0.8); border: 1px solid rgba(245, 200, 66, 0.3); border-radius: 16px; padding: 16px; margin: 16px 0; }
-        .referral-code { font-size: 20px; font-weight: bold; color: #f5c842; letter-spacing: 2px; direction: ltr; text-align: center; word-break: break-all; background: #0b0e1a; padding: 8px 12px; border-radius: 12px; border: 1px dashed #f5c842; }
-    </style>
+.glass-card { background: rgba(28, 32, 36, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(154, 144, 123, 0.1); }
+.vortex-pulse { animation: pulse-gold 2.5s ease-in-out infinite; }
+@keyframes pulse-gold { 0%, 100% { text-shadow: 0 0 12px rgba(238, 193, 60, 0.4); } 50% { text-shadow: 0 0 4px rgba(238, 193, 60, 0.1); } }
+.price-up { color: #00c076; } .price-down { color: #ff4d4d; }
+#coin-container { position: fixed; top: 0; left: 0; width: 100%; height: 400px; z-index: 0; pointer-events: none; opacity: 0.15; mask-image: radial-gradient(circle, black 0%, transparent 70%); }
+.order-row-update { animation: row-flash 0.6s ease-out; }
+@keyframes row-flash { 0% { background-color: rgba(238, 193, 60, 0.15); } 100% { background-color: transparent; } }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.referral-box { background: rgba(238, 193, 60, 0.05); border: 1px solid rgba(238, 193, 60, 0.2); border-radius: 16px; padding: 16px; margin: 16px 0; }
+.referral-code { font-size: 18px; font-weight: bold; color: #f5c842; letter-spacing: 1px; direction: ltr; text-align: center; word-break: break-all; background: #0b0e1a; padding: 8px 12px; border-radius: 12px; border: 1px dashed #f5c842; }
+.toast-msg { animation: fadeInUp 0.3s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
 </head>
 <body class="bg-background text-on-background antialiased min-h-screen relative overflow-x-hidden font-body-sm pb-24">
-<div class="fixed inset-0 z-[-1] pointer-events-none">
-<div class="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-primary/5 rounded-full blur-[100px]"></div>
-<div class="absolute bottom-[20%] left-[-20%] w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[120px]"></div>
-</div>
 <div id="coin-container"></div>
-
-<!-- TopAppBar -->
-<header class="flex flex-row-reverse justify-between items-center px-gutter py-stack-sm w-full fixed top-0 z-50 bg-transparent backdrop-blur-xl border-b border-outline-variant/30">
+<!-- Top Navigation -->
+<header class="flex flex-row items-center justify-between px-gutter py-3 w-full fixed top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant/20">
 <div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden">
-<img class="object-cover w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzMhz5P_1aBVWp9fKPzgYejEujMgOVNQ1Ap5NQ0x1XciN3iWrhtXvX27VHXcMKeC8zfCZl8qHPzG8JBCHXikk--zgNLzafZftp1eMqeYrnu8XommF81ixj56bhQ28Bs-P_guiq0oibTLjNYJawHijSRwLPQDf4GOUa-OKWtiaomX5WhQekJu8UXd7SS0Qje9NrMZPwI-1Uks1w7N9QdtNx2nfACp69MWfbGdevX5iUAzFPxbZqSPEXUx739swqb6k9hP5hKgy-Yz8"/>
+<div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/30 flex items-center justify-center overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzMhz5P_1aBVWp9fKPzgYejEujMgOVNQ1Ap5NQ0x1XciN3iWrhtXvX27VHXcMKeC8zfCZl8qHPzG8JBCHXikk--zgNLzafZftp1eMqeYrnu8XommF81ixj56bhQ28Bs-P_guiq0oibTLjNYJawHijSRwLPQDf4GOUa-OKWtiaomX5WhQekJu8UXd7SS0Qje9NrMZPwI-1Uks1w7N9QdtNx2nfACp69MWfbGdevX5iUAzFPxbZqSPEXUx739swqb6k9hP5hKgy-Yz8"/>
 </div>
-<h1 class="font-headline-md text-headline-md-mobile text-primary tracking-tight">@{{USERNAME}}</h1>
+<span class="font-headline-md text-body-lg text-on-surface" id="usernameDisplay">@{{USERNAME}}</span>
 </div>
-<div>
-<span class="font-body-lg text-body-lg text-primary font-semibold px-3 py-1.5 rounded-lg bg-surface-container/50 border border-primary/20 backdrop-blur-md">{{POINTS}} VTX</span>
+<div class="flex items-center bg-surface-container px-3 py-1.5 rounded-full border border-primary/20">
+<span class="text-primary font-bold text-xs" id="pointsDisplay">{{POINTS}} VTX</span>
 </div>
 </header>
-
-<main class="pt-[80px] px-gutter w-full max-w-4xl mx-auto space-y-stack-md relative z-10">
-<!-- Asset Header -->
-<section class="flex flex-col items-center justify-center py-stack-md relative z-10">
-<div class="flex items-center gap-2 mb-2">
-<span class="px-3 py-1 bg-surface-container rounded-full border border-outline-variant/50 font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1">
-<span class="w-2 h-2 rounded-full bg-[#4ade80] green-pulse inline-block"></span> مباشر
-</span>
-<h2 class="font-headline-md text-headline-md text-on-background">VTX / USDT</h2>
+<main class="pt-[72px] px-gutter w-full max-w-lg mx-auto space-y-stack-md relative z-10">
+<!-- Asset Info -->
+<section class="text-center py-4">
+<div class="flex items-center justify-center gap-2 mb-1">
+<h2 class="font-display-lg text-headline-md text-on-surface">VTX / USDT</h2>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">PRE-SALE</span>
 </div>
-<div class="text-center">
-<div class="font-display-lg-mobile text-display-lg-mobile text-primary font-bold vortex-pulse" id="live-price">0.1387</div>
-<div class="font-body-sm text-body-sm text-[#4ade80] flex items-center justify-center gap-1 mt-1">
-<span class="material-symbols-outlined text-sm">trending_up</span> +12.5% (24h)
+<div class="flex flex-col items-center">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary vortex-pulse" id="live-price">0.1387</span>
+<div class="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+12.45%</span>
+<span class="text-on-surface-variant/60 font-normal">24س</span>
+</div>
+</div>
+</section>
+<!-- Chart -->
+<div class="space-y-2">
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="flex justify-between items-center p-3 border-b border-outline-variant/10">
+<div class="flex bg-surface-container rounded-lg p-0.5 gap-1">
+<button class="px-3 py-1 text-[10px] font-bold text-on-surface-variant">1س</button>
+<button class="px-3 py-1 text-[10px] font-bold bg-surface-container-high text-primary rounded-md shadow-sm">4س</button>
+<button class="px-3 py-1 text-[10px] font-bold text-on-surface-variant">يوم</button>
+</div>
+<button class="text-on-surface-variant/60 hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">fullscreen</span></button>
+</div>
+<div class="w-full h-[240px] relative overflow-hidden bg-surface-container-lowest/30" id="tvchart"></div>
+<div class="grid grid-cols-2 border-t border-outline-variant/10">
+<div class="p-2 border-l border-outline-variant/10">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[9px] font-label-caps text-on-surface-variant/70 uppercase">RSI (14)</span>
+<span class="text-[9px] font-bold text-primary">64.2</span>
+</div>
+<div class="h-[40px] w-full relative"><svg class="w-full h-full opacity-60" preserveaspectratio="none" viewbox="0 0 100 40"><path d="M0 30 L10 28 L20 32 L30 25 L40 22 L50 24 L60 18 L70 15 L80 18 L90 12 L100 10" fill="none" stroke="#eec13c" stroke-width="1.5"></path></svg></div>
+</div>
+<div class="p-2">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[9px] font-label-caps text-on-surface-variant/70 uppercase">MACD</span>
+<span class="text-[9px] font-bold text-emerald-400">0.0012</span>
+</div>
+<div class="h-[40px] w-full relative"><svg class="w-full h-full opacity-60" preserveaspectratio="none" viewbox="0 0 100 40"><rect fill="#ff4d4d" height="10" width="2" x="10" y="20"></rect><rect fill="#00c076" height="15" width="2" x="20" y="15"></rect><rect fill="#00c076" height="20" width="2" x="30" y="10"></rect><rect fill="#00c076" height="18" width="2" x="40" y="12"></rect><rect fill="#ff4d4d" height="12" width="2" x="50" y="18"></rect><rect fill="#00c076" height="15" width="2" x="60" y="15"></rect><rect fill="#00c076" height="22" width="2" x="70" y="8"></rect></svg></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 bg-primary/5 border border-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-primary">info</span>
+<span class="text-[10px] text-primary/90 font-medium">تم رصد زيادة في طلبات الشراء المؤسسية خلال الـ 15 دقيقة الأخيرة.</span>
+</div>
+</div>
+<!-- Order Book -->
+<section class="glass-card rounded-xl p-card-padding">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold flex items-center gap-2 text-on-surface"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>سجل الطلبات المباشر</h3>
+<span class="text-[10px] text-on-surface-variant font-label-caps">VTX/USDT</span>
+</div>
+<div class="space-y-0.5" id="order-book">
+<div class="grid grid-cols-3 text-[10px] text-on-surface-variant/60 pb-2 font-bold px-1"><div class="text-right">السعر (USDT)</div><div class="text-center">الكمية (VTX)</div><div class="text-left">الإجمالي</div></div>
+<div class="order-container space-y-px">
+<div class="relative group h-7 overflow-hidden rounded"><div class="absolute inset-y-0 right-0 bg-emerald-500/10 transition-all duration-500" style="width: 85%"></div><div class="grid grid-cols-3 h-full items-center px-1 relative z-10 text-[11px]"><span class="text-right text-emerald-400 font-bold price-cell">0.1387</span><span class="text-center text-on-surface font-medium qty-cell">1,420,000</span><span class="text-left text-on-surface-variant/80">175.7K</span></div></div>
+<div class="relative group h-7 overflow-hidden rounded"><div class="absolute inset-y-0 right-0 bg-emerald-500/10 transition-all duration-500" style="width: 62%"></div><div class="grid grid-cols-3 h-full items-center px-1 relative z-10 text-[11px]"><span class="text-right text-emerald-400 font-bold price-cell">0.1386</span><span class="text-center text-on-surface font-medium qty-cell">950,000</span><span class="text-left text-on-surface-variant/80">117.5K</span></div></div>
+<div class="relative group h-7 overflow-hidden rounded"><div class="absolute inset-y-0 left-0 bg-red-500/10 transition-all duration-500" style="width: 45%"></div><div class="grid grid-cols-3 h-full items-center px-1 relative z-10 text-[11px]"><span class="text-right text-red-400 font-bold price-cell">0.1388</span><span class="text-center text-on-surface font-medium qty-cell">680,000</span><span class="text-left text-on-surface-variant/80">84.3K</span></div></div>
+<div class="relative group h-7 overflow-hidden rounded"><div class="absolute inset-y-0 left-0 bg-red-500/10 transition-all duration-500" style="width: 78%"></div><div class="grid grid-cols-3 h-full items-center px-1 relative z-10 text-[11px]"><span class="text-right text-red-400 font-bold price-cell">0.1389</span><span class="text-center text-on-surface font-medium qty-cell">1,200,000</span><span class="text-left text-on-surface-variant/80">148.9K</span></div></div>
 </div>
 </div>
 </section>
-
-<!-- الشارت الوهمي -->
-<section class="glass-card rounded-xl p-card-padding h-[350px] flex flex-col relative overflow-hidden">
-<div class="flex justify-between items-center mb-4 z-10">
-<div class="flex gap-2">
-<button class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary">1H</button>
-<button class="px-2 py-1 text-xs bg-surface-container-high text-primary rounded border border-primary/20">4H</button>
-<button class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary">1D</button>
-<button class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary">1W</button>
-</div>
-<div class="flex gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">fullscreen</span></div>
-</div>
-<div class="flex-grow w-full relative" dir="ltr" id="tvchart"></div>
-</section>
-
-<!-- RSI وهمي -->
-<section class="glass-card rounded-xl p-3 h-[120px] flex flex-col relative overflow-hidden">
-<div class="flex justify-between items-center mb-2 z-10">
-<span class="font-label-caps text-[10px] text-on-surface-variant">RSI (14)</span>
-<span class="text-primary font-semibold text-xs">64.15</span>
-</div>
-<div class="flex-grow w-full relative opacity-80">
-<div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
-<div class="border-t border-primary/20 w-full flex justify-end"><span class="text-[8px] text-primary/40 -mt-1.5">70</span></div>
-<div class="border-t border-primary/10 w-full"></div>
-<div class="border-t border-primary/20 w-full flex justify-end"><span class="text-[8px] text-primary/40 -mt-1.5">30</span></div>
-</div>
-<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100"><path d="M0 60 Q 30 70, 50 45 T 100 15" fill="none" stroke="#eec13c" stroke-width="1.5"></path></svg>
-</div>
-</section>
-
-<!-- Order Book وهمي -->
-<section class="glass-card rounded-2xl p-card-padding border-t border-[#4ade80]/20 relative overflow-hidden z-10">
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-headline-md text-body-lg text-[#4ade80] flex items-center gap-2"><span class="material-symbols-outlined text-sm">bar_chart_4_bars</span> أكبر أوامر الشراء الحالية</h3>
-<span class="text-[10px] font-label-caps text-on-surface-variant/60">تحديث مباشر</span>
-</div>
-<div class="space-y-2" id="order-book-container">
-<div class="grid grid-cols-3 text-[10px] font-label-caps text-on-surface-variant/50 pb-1 border-b border-outline-variant/20">
-<div class="text-right">السعر (USDT)</div><div class="text-center">الكمية (VTX)</div><div class="text-left">الإجمالي (USDT)</div>
-</div>
-<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[85%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1387</div><div class="text-center text-on-surface font-semibold qty-cell">1,250,000</div><div class="text-left text-on-surface-variant total-cell">173,375</div></div></div>
-<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[65%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1386</div><div class="text-center text-on-surface font-semibold qty-cell">840,000</div><div class="text-left text-on-surface-variant total-cell">116,424</div></div></div>
-<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[95%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1385</div><div class="text-center text-on-surface font-semibold qty-cell">2,100,000</div><div class="text-left text-on-surface-variant total-cell">290,850</div></div></div>
-<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[40%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1384</div><div class="text-center text-on-surface font-semibold qty-cell">520,000</div><div class="text-left text-on-surface-variant total-cell">71,968</div></div></div>
-</div>
-<div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-center gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
-<span class="text-[10px] font-label-caps text-[#4ade80]/80">سيولة مؤسسية نشطة</span>
-</div>
-</section>
-
-<!-- قسم الإحالات (المدمج مع السيرفر) -->
-<section class="glass-card rounded-2xl p-card-padding border-t border-primary/30 relative overflow-hidden z-10">
-<h3 class="font-headline-md text-headline-md text-primary mb-3 flex items-center gap-2"><span class="material-symbols-outlined">group</span> دعوة الأصدقاء</h3>
+<!-- Referral Section (مدمج مع السيرفر) -->
+<section class="glass-card rounded-xl p-card-padding border-t border-primary/20 mt-4">
+<h3 class="text-sm font-bold flex items-center gap-2 text-primary"><span class="material-symbols-outlined text-[18px]">group</span> دعوة الأصدقاء</h3>
 <div class="referral-box">
-<div class="flex justify-between items-center mb-2">
-<span class="text-on-surface-variant text-sm">👥 عدد المدعوين: <span class="text-primary font-bold" id="refCountDisplay">{{REFERRALS_COUNT}}</span></span>
-<span class="text-on-surface-variant text-sm">🏅 مكافأتك: 10 نقاط لكل مدعو</span>
+<div class="flex justify-between items-center mb-3">
+<span class="text-on-surface-variant text-xs">👥 عدد المدعوين: <span class="text-primary font-bold" id="refCountDisplay">{{REFERRALS_COUNT}}</span></span>
+<span class="text-on-surface-variant text-xs">🏅 مكافأتك: 10 نقاط لكل مدعو</span>
 </div>
 <div class="flex flex-col gap-3">
 <div class="flex justify-between items-center gap-2 bg-black/30 p-3 rounded-xl border border-primary/10">
@@ -219,289 +176,221 @@
 </div>
 </div>
 </section>
-
-<!-- Pre-sale Purchase Widget (مربوط بالسيرفر) -->
-<section class="glass-card rounded-2xl p-card-padding border-t border-primary/30 relative overflow-hidden mt-stack-lg z-10">
-<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
-<h3 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2"><span class="material-symbols-outlined">rocket_launch</span> شراء في مرحلة ما قبل البيع</h3>
-<div class="space-y-4 relative z-10">
-<div class="bg-surface-container-lowest border border-outline-variant focus-within:border-primary focus-within:shadow-[0_0_10px_rgba(245,200,66,0.2)] rounded-lg p-3 transition-all duration-300">
-<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>تدفع (USDT)</span><span>الرصيد المتوفر: <span id="userBalanceDisplay">5,000.00</span></span></div>
-<div class="flex justify-between items-center">
-<input class="bg-transparent border-none outline-none text-display-lg-mobile font-display-lg-mobile text-on-background w-full p-0 focus:ring-0 placeholder:text-on-surface-variant/30" dir="ltr" placeholder="0.00" type="number" id="usdtInput"/>
-<div class="flex items-center gap-2 bg-surface-container px-2 py-1 rounded"><span class="font-label-caps text-label-caps text-on-surface">USDT</span></div>
+<!-- Buy Widget (مربوط بالسيرفر) -->
+<section class="glass-card rounded-2xl p-card-padding border-t border-primary/20 shadow-lg shadow-primary/5 mt-4">
+<h3 class="text-lg font-bold text-primary mb-5 flex items-center gap-2"><span class="material-symbols-outlined text-[20px]">rocket_launch</span> شراء VTX المسبق</h3>
+<div class="space-y-4">
+<div class="bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 focus-within:border-primary/50 transition-all">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-on-surface-variant font-medium">المبلغ (USDT)</span>
+<span class="text-[10px] text-on-surface-variant/60">الرصيد: 5,420.00</span>
+</div>
+<div class="flex items-center gap-2">
+<input class="bg-transparent border-none p-0 text-2xl font-bold w-full focus:ring-0 placeholder:text-on-surface-variant/20" dir="ltr" placeholder="0.00" type="number" id="usdtInput"/>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high rounded-lg"><span class="text-xs font-bold text-on-surface">USDT</span></div>
 </div>
 </div>
-<div class="flex justify-center -my-2 relative z-20"><div class="bg-surface-container border border-outline-variant rounded-full p-1 text-on-surface-variant"><span class="material-symbols-outlined text-sm">swap_vert</span></div></div>
-<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3">
-<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>تحصل على (VTX)</span><span id="buy-rate-label">سعر الشراء: 0.1387 USDT</span></div>
-<div class="flex justify-between items-center">
-<input class="bg-transparent border-none outline-none text-display-lg-mobile font-display-lg-mobile text-primary/70 w-full p-0 focus:ring-0 placeholder:text-primary/20 pointer-events-none" dir="ltr" placeholder="0.00" readonly type="number" id="vtxOutput"/>
-<div class="flex items-center gap-2 bg-primary/10 px-2 py-1 rounded"><span class="font-label-caps text-label-caps text-primary">VTX</span></div>
+<div class="flex justify-center -my-3 relative z-10"><div class="w-8 h-8 bg-surface-container-highest border border-outline-variant/30 rounded-full flex items-center justify-center text-primary shadow-lg"><span class="material-symbols-outlined text-[18px]">expand_more</span></div></div>
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-on-surface-variant font-medium">ستحصل على (VTX)</span>
+<span class="text-[10px] text-primary/70 font-bold" id="exchange-rate">1 VTX = 0.1387 USDT</span>
+</div>
+<div class="flex items-center gap-2">
+<input class="bg-transparent border-none p-0 text-2xl font-bold w-full focus:ring-0 text-primary/40" dir="ltr" placeholder="0.00" readonly type="text" id="vtxOutput"/>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20"><span class="text-xs font-bold text-primary">VTX</span></div>
 </div>
 </div>
-
-<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3">
-<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>📎 رقم المعاملة (TXID)</span></div>
-<input class="bg-transparent border border-primary/20 rounded-lg p-2 w-full text-sm text-on-background focus:border-primary outline-none" placeholder="أدخل TXID من محفظتك..." id="txidInput"/>
+<div class="bg-surface-container-high/30 rounded-lg p-3 flex items-start gap-3 border border-outline-variant/10">
+<span class="material-symbols-outlined text-amber-500 text-[18px] mt-0.5">lock_clock</span>
+<p class="text-[10px] text-on-surface-variant leading-relaxed"><span class="font-bold text-on-surface">تنبيه التجميد:</span> سيتم قفل العملات المشتراة في محفظة الضمان حتى تاريخ الإدراج الرسمي.</p>
 </div>
-
-<div class="flex gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 items-start">
-<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">warning</span>
-<div class="flex flex-col gap-1">
-<span class="text-primary font-bold text-xs">تنبيه:</span>
-<p class="text-on-surface-variant text-[11px] leading-relaxed">بمجرد إتمام الشراء، سيتم تجميد الأموال المشتراة وتأمينها. سيتم فك التجميد فور إدراج العملة في المنصات.</p>
-</div>
-</div>
-<button onclick="submitPurchase()" class="w-full gold-gradient text-on-primary font-headline-md text-headline-md-mobile py-4 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all duration-200 gold-glow mt-2">تأكيد الشراء</button>
+<input class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-sm text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary/50 outline-none" placeholder="📎 رقم المعاملة (TXID) من محفظتك..." id="txidInput"/>
+<button onclick="submitPurchase()" class="w-full bg-primary text-on-primary py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-transform">تأكيد عملية الشراء</button>
 <div id="purchaseStatus" class="text-center text-sm mt-2"></div>
 </div>
 </section>
 </main>
-
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex flex-row-reverse justify-around items-center h-20 pb-safe px-4 bg-surface-container/80 backdrop-blur-md border-t border-primary/20 shadow-[0_-4px_20px_rgba(238,193,60,0.15)] rounded-t-xl md:hidden">
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200 w-16" href="/app">
-<span class="material-symbols-outlined text-[24px] mb-1">home</span><span class="font-label-caps text-[10px]">الرئيسية</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200 w-16" href="#">
-<span class="material-symbols-outlined text-[24px] mb-1">group</span><span class="font-label-caps text-[10px]">الإحالات</span>
-</a>
-<a class="flex flex-col items-center justify-center text-primary filter drop-shadow-[0_0_8px_rgba(238,193,60,0.6)] active:scale-90 duration-200 w-16 relative" href="#">
-<div class="absolute -top-3 w-10 h-10 bg-primary/10 rounded-full blur-md"></div>
-<span class="material-symbols-outlined text-[28px] mb-1" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
-<span class="font-label-caps text-[10px]">شراء</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200 w-16" href="#">
-<span class="material-symbols-outlined text-[24px] mb-1">person</span><span class="font-label-caps text-[10px]">الحساب</span>
-</a>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex items-center justify-around h-20 bg-surface-container/90 backdrop-blur-md border-t border-outline-variant/20 pb-safe shadow-2xl">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant group" href="#"><span class="material-symbols-outlined text-[24px] group-hover:text-primary transition-colors">dashboard</span><span class="text-[10px] font-bold">السوق</span></a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant group" href="#"><span class="material-symbols-outlined text-[24px] group-hover:text-primary transition-colors">diversity_3</span><span class="text-[10px] font-bold">الإحالات</span></a>
+<div class="relative -mt-8"><div class="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div><button class="relative w-14 h-14 bg-primary rounded-full flex items-center justify-center text-on-primary shadow-xl shadow-primary/30 active:scale-90 transition-transform"><span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1">shopping_cart</span></button></div>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant group" href="#"><span class="material-symbols-outlined text-[24px] group-hover:text-primary transition-colors">account_balance_wallet</span><span class="text-[10px] font-bold">المحفظة</span></a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant group" href="#"><span class="material-symbols-outlined text-[24px] group-hover:text-primary transition-colors">person</span><span class="text-[10px] font-bold">حسابي</span></a>
 </nav>
 
 <script>
-    // --- متغيرات السيرفر المدمجة ---
-    const TELEGRAM_ID = {{TELEGRAM_ID}};
-    const REFERRAL_CODE = '{{REFERRAL_CODE}}';
-    let currentLivePrice = 0.1387; // السعر الافتراضي
-    let userPoints = {{POINTS}};
+// --- متغيرات السيرفر المدمجة ---
+const TELEGRAM_ID = {{TELEGRAM_ID}};
+const REFERRAL_CODE = '{{REFERRAL_CODE}}';
+let currentLivePrice = 0.1387;
+let userPoints = {{POINTS}};
 
-    // تحديث واجهة المستخدم بالبيانات الحقيقية من السيرفر
-    async function fetchUserStatus() {
-        try {
-            const res = await fetch(`/api/status?telegram_id=${TELEGRAM_ID}`);
-            const data = await res.json();
-            if (!res.ok) throw new Error('فشل التحديث');
-            
-            // تحديث النقاط المعروضة
-            userPoints = data.points || 0;
-            document.querySelector('.font-body-lg.text-primary.font-semibold').innerText = userPoints + ' VTX';
-            
-            // تحديث عدد المدعوين
-            const refCount = data.referrals_count || 0;
-            document.getElementById('refCountDisplay').innerText = refCount;
-            
-            // تحديث السعر من السيرفر (إن كان موجوداً)
-            if (data.vtx_price) {
-                currentLivePrice = data.vtx_price;
-            }
-            document.getElementById('live-price').innerText = currentLivePrice.toFixed(4);
-            document.getElementById('buy-rate-label').innerText = `سعر الشراء: ${currentLivePrice.toFixed(4)} USDT`;
-            
-        } catch (e) {
-            console.log('⚠️ تحديث تلقائي فشل، نستخدم البيانات المحلية');
+// تحديث البيانات من السيرفر
+async function fetchUserStatus() {
+    try {
+        const res = await fetch(`/api/status?telegram_id=${TELEGRAM_ID}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error('فشل التحديث');
+        userPoints = data.points || 0;
+        document.getElementById('pointsDisplay').innerText = userPoints + ' VTX';
+        document.getElementById('refCountDisplay').innerText = data.referrals_count || 0;
+        if (data.vtx_price) {
+            currentLivePrice = data.vtx_price;
         }
+        document.getElementById('live-price').innerText = currentLivePrice.toFixed(4);
+        document.getElementById('exchange-rate').innerText = `1 VTX = ${currentLivePrice.toFixed(4)} USDT`;
+    } catch (e) { console.log('⚠️ تحديث تلقائي فشل'); }
+}
+
+// 1. تقلب السعر الوهمي
+setInterval(() => {
+    const change = (Math.random() - 0.5) * 0.0002;
+    let newPrice = currentLivePrice + change;
+    newPrice = Math.max(0.1300, Math.min(0.1450, newPrice));
+    currentLivePrice = newPrice;
+    const priceEl = document.getElementById('live-price');
+    priceEl.innerText = currentLivePrice.toFixed(4);
+    document.getElementById('exchange-rate').innerText = `1 VTX = ${currentLivePrice.toFixed(4)} USDT`;
+    priceEl.classList.add('transition-colors', 'duration-300');
+    if (change > 0) { priceEl.style.color = '#00c076'; } else { priceEl.style.color = '#ff4d4d'; }
+    setTimeout(() => { priceEl.style.color = ''; }, 600);
+}, 3000);
+
+// 2. تحديث دفتر الأوامر الوهمي
+setInterval(() => {
+    const rows = document.querySelectorAll('.order-container > div');
+    const row = rows[Math.floor(Math.random() * rows.length)];
+    if (!row) return;
+    const qtyCell = row.querySelector('.qty-cell');
+    const newQty = (Math.random() * 2000000 + 100000).toLocaleString(undefined, {maximumFractionDigits:0});
+    qtyCell.innerText = newQty;
+    row.classList.add('order-row-update');
+    setTimeout(() => row.classList.remove('order-row-update'), 600);
+}, 1500);
+
+// 3. 3D Coin و Chart (مثل السابق)
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('coin-container');
+    if(container && window.THREE) {
+        const width = window.innerWidth, height = 400;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, width/height, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(width, height);
+        container.appendChild(renderer.domElement);
+        const light = new THREE.PointLight(0xf5c842, 2.5);
+        light.position.set(5,5,5);
+        scene.add(light);
+        const geometry = new THREE.CylinderGeometry(2, 2, 0.4, 64);
+        const material = new THREE.MeshStandardMaterial({ color: 0xf5c842, roughness: 0.3, metalness: 0.8 });
+        const coin = new THREE.Mesh(geometry, material);
+        coin.rotation.x = Math.PI/2;
+        scene.add(coin);
+        camera.position.z = 6;
+        function animate() { requestAnimationFrame(animate); coin.rotation.y += 0.015; renderer.render(scene, camera); }
+        animate();
     }
-
-    // 1. تقلب السعر الوهمي (مع العودة للسعر الأساسي)
-    setInterval(() => {
-        const change = (Math.random() - 0.5) * 0.0002;
-        let newPrice = currentLivePrice + change;
-        newPrice = Math.max(0.1300, Math.min(0.1450, newPrice)); // حدود آمنة
-        currentLivePrice = newPrice;
-        
-        const priceEl = document.getElementById('live-price');
-        priceEl.innerText = currentLivePrice.toFixed(4);
-        const rateLabel = document.getElementById('buy-rate-label');
-        if (rateLabel) rateLabel.innerText = `سعر الشراء: ${currentLivePrice.toFixed(4)} USDT`;
-        
-        // تحديث الخلفية الخضراء/الحمراء
-        priceEl.classList.add('transition-colors', 'duration-300');
-        if (change > 0) { priceEl.classList.replace('text-primary', 'text-[#4ade80]'); } 
-        else { priceEl.classList.replace('text-primary', 'text-[#f87171]'); }
-        setTimeout(() => { priceEl.classList.remove('text-[#4ade80]', 'text-[#f87171]'); priceEl.classList.add('text-primary'); }, 600);
-    }, 3000);
-
-    // 2. تحديث دفتر الأوامر الوهمي
-    setInterval(() => {
-        const rows = document.querySelectorAll('.order-row-highlight');
-        const row = rows[Math.floor(Math.random() * rows.length)];
-        if (!row) return;
-        const priceCell = row.querySelector('.price-cell');
-        const qtyCell = row.querySelector('.qty-cell');
-        const totalCell = row.querySelector('.total-cell');
-        const depthBar = row.querySelector('.order-depth-bar');
-        
-        const oldPrice = parseFloat(priceCell.innerText);
-        const newPrice = (oldPrice + (Math.random() - 0.5) * 0.0001).toFixed(4);
-        const oldQty = parseInt(qtyCell.innerText.replace(/,/g, ''));
-        const newQty = Math.max(10000, Math.floor(oldQty + (Math.random() - 0.5) * 40000));
-        const newTotal = (newPrice * newQty).toLocaleString(undefined, { maximumFractionDigits: 0 });
-        
-        row.classList.add('update-flash');
-        priceCell.innerText = newPrice;
-        qtyCell.innerText = newQty.toLocaleString();
-        totalCell.innerText = newTotal;
-        depthBar.style.width = `${Math.floor(Math.random() * 60) + 30}%`;
-        setTimeout(() => row.classList.remove('update-flash'), 800);
-    }, 3000);
-
-    // 3. الشارت الوهمي (ثلاثي الأبعاد و Lightweight Charts)
-    document.addEventListener('DOMContentLoaded', () => {
-        // 3D Coin
-        const container = document.getElementById('coin-container');
-        if(container && window.THREE) {
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, width/height, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(width, height);
-            container.appendChild(renderer.domElement);
-            const light = new THREE.PointLight(0xf5c842, 2, 100);
-            light.position.set(5,5,5);
-            scene.add(light);
-            const coinGroup = new THREE.Group();
-            const geometry = new THREE.CylinderGeometry(2, 2, 0.4, 64);
-            const material = new THREE.MeshPhongMaterial({ color: 0xf5c842, shininess: 100 });
-            const coinBody = new THREE.Mesh(geometry, material);
-            coinBody.rotation.x = Math.PI/2;
-            coinGroup.add(coinBody);
-            scene.add(coinGroup);
-            camera.position.z = 5;
-            let time = 0;
-            function animate() {
-                requestAnimationFrame(animate);
-                time += 0.01;
-                coinGroup.rotation.y += 0.02;
-                coinGroup.position.y = Math.sin(time) * 0.2;
-                renderer.render(scene, camera);
-            }
-            animate();
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-        }
-
-        // Lightweight Charts (وهمي)
-        const chartContainer = document.getElementById('tvchart');
-        if(chartContainer && window.LightweightCharts) {
-            const chart = LightweightCharts.createChart(chartContainer, {
-                layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#9a907b' },
-                grid: { vertLines: { color: 'rgba(154,144,123,0.1)' }, horzLines: { color: 'rgba(154,144,123,0.1)' } },
-                rightPriceScale: { borderVisible: false },
-                timeScale: { borderVisible: false, timeVisible: true },
-            });
-            const series = chart.addCandlestickSeries({ upColor: '#4ade80', downColor: '#f87171', borderVisible: false });
-            const data = [];
-            let t = Math.floor(Date.now()/1000) - 100*3600;
-            let p = 0.1350;
-            for(let i=0; i<100; i++) {
-                const open = p;
-                const close = open + (Math.random()-0.5)*0.002;
-                data.push({ time: t, open, high: Math.max(open,close)+0.001, low: Math.min(open,close)-0.001, close });
-                p = close;
-                t += 3600;
-            }
-            series.setData(data);
-            chart.timeScale().fitContent();
-            new ResizeObserver(entries => { if(entries.length) chart.applyOptions({ height: entries[0].contentRect.height, width: entries[0].contentRect.width }); }).observe(chartContainer);
-        }
-    });
-
-    // 4. ربط حقل USDT بـ VTX تلقائياً
-    document.addEventListener('input', (e) => {
-        if(e.target.id === 'usdtInput') {
-            const val = parseFloat(e.target.value);
-            const output = document.getElementById('vtxOutput');
-            if(!isNaN(val) && val > 0) {
-                output.value = (val / currentLivePrice).toFixed(2);
-                output.classList.remove('text-primary/70');
-                output.classList.add('text-primary');
-            } else {
-                output.value = '';
-                output.classList.add('text-primary/70');
-            }
-        }
-    });
-
-    // 5. دالة نسخ كود الإحالة
-    function copyReferral() {
-        const code = document.getElementById('refCodeDisplay').innerText;
-        navigator.clipboard.writeText(code).then(() => {
-            showToast('✅ تم نسخ الكود: ' + code);
-        }).catch(() => {
-            alert('انسخ الكود يدوياً: ' + code);
+    const chartContainer = document.getElementById('tvchart');
+    if(chartContainer && window.LightweightCharts) {
+        const chart = LightweightCharts.createChart(chartContainer, {
+            layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#9a907b', fontSize: 10 },
+            grid: { vertLines: { visible: false }, horzLines: { color: 'rgba(154, 144, 123, 0.05)' } },
+            rightPriceScale: { borderVisible: false }, timeScale: { borderVisible: false }
         });
+        const series = chart.addCandlestickSeries({
+            upColor: '#00c076', downColor: '#ff4d4d', borderVisible: false
+        });
+        const data = [];
+        let t = Math.floor(Date.now()/1000) - 200*3600, p = 0.1300;
+        for(let i=0; i<100; i++) {
+            const o = p; const c = o + (Math.random()-0.48)*0.002;
+            data.push({ time: t, open: o, high: Math.max(o,c)+0.0005, low: Math.min(o,c)-0.0005, close: c });
+            p = c; t += 3600;
+        }
+        series.setData(data);
+        chart.timeScale().fitContent();
+        new ResizeObserver(entries => { if(entries.length) chart.applyOptions({ height: entries[0].contentRect.height, width: entries[0].contentRect.width }); }).observe(chartContainer);
     }
+});
 
-    // 6. دالة مشاركة الرابط
-    function shareReferral() {
-        const code = document.getElementById('refCodeDisplay').innerText;
-        const url = `https://t.me/YourBotUsername?start=${code}`; // غير "YourBotUsername" لاسم البوت الفعلي
-        if (navigator.share) {
-            navigator.share({ title: 'انضم إلى Vortex', text: `🚀 انضم إلى مشروع Vortex واحصل على مكافآت! استخدم كود الدعوة: ${code}`, url: url });
+// 4. حساب السعر التلقائي
+document.addEventListener('input', (e) => {
+    if(e.target.id === 'usdtInput') {
+        const val = parseFloat(e.target.value);
+        const output = document.getElementById('vtxOutput');
+        if(!isNaN(val) && val > 0) {
+            output.value = (val / currentLivePrice).toFixed(2);
+            output.classList.remove('text-primary/40');
+            output.classList.add('text-primary');
         } else {
-            prompt('انسخ رابط الدعوة:', url);
+            output.value = '';
+            output.classList.add('text-primary/40');
         }
     }
+});
 
-    // 7. دالة تقديم طلب الشراء (تتصل بالسيرفر)
-    async function submitPurchase() {
-        const usdtInput = document.getElementById('usdtInput');
-        const txidInput = document.getElementById('txidInput');
-        const statusDiv = document.getElementById('purchaseStatus');
-        const amount = parseFloat(usdtInput.value);
-        const txid = txidInput.value.trim();
+// 5. نظام الإحالات
+function copyReferral() {
+    const code = document.getElementById('refCodeDisplay').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        showToast('✅ تم نسخ الكود: ' + code);
+    }).catch(() => {
+        alert('انسخ الكود يدوياً: ' + code);
+    });
+}
+function shareReferral() {
+    const code = document.getElementById('refCodeDisplay').innerText;
+    const url = `https://t.me/YourBotUsername?start=${code}`;
+    if (navigator.share) {
+        navigator.share({ title: 'انضم إلى Vortex', text: `🚀 انضم إلى مشروع Vortex واحصل على مكافآت! استخدم كود الدعوة: ${code}`, url: url });
+    } else {
+        prompt('انسخ رابط الدعوة:', url);
+    }
+}
 
-        if (!amount || amount <= 0) { statusDiv.innerHTML = '<span style="color:#f87171;">⚠️ الرجاء إدخال مبلغ صحيح.</span>'; return; }
-        if (!txid || txid.length < 5) { statusDiv.innerHTML = '<span style="color:#f87171;">⚠️ الرجاء إدخال رقم المعاملة (TXID).</span>'; return; }
-
-        statusDiv.innerHTML = '<span style="color:#f5c842;">⏳ جاري إرسال الطلب...</span>';
-        try {
-            const res = await fetch('/api/purchase', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ telegram_id: TELEGRAM_ID, amount, txid })
-            });
-            const data = await res.json();
-            if (data.success) {
-                statusDiv.innerHTML = '<span style="color:#4ade80;">✅ ' + data.message + '</span>';
-                usdtInput.value = '';
-                txidInput.value = '';
-                document.getElementById('vtxOutput').value = '';
-            } else {
-                statusDiv.innerHTML = '<span style="color:#f87171;">❌ ' + data.message + '</span>';
-            }
-        } catch (e) {
-            statusDiv.innerHTML = '<span style="color:#f87171;">❌ خطأ في الاتصال بالسيرفر</span>';
+// 6. تقديم طلب شراء (يربط بالسيرفر)
+async function submitPurchase() {
+    const usdtInput = document.getElementById('usdtInput');
+    const txidInput = document.getElementById('txidInput');
+    const statusDiv = document.getElementById('purchaseStatus');
+    const amount = parseFloat(usdtInput.value);
+    const txid = txidInput.value.trim();
+    if (!amount || amount <= 0) { statusDiv.innerHTML = '<span style="color:#ff4d4d;">⚠️ الرجاء إدخال مبلغ صحيح.</span>'; return; }
+    if (!txid || txid.length < 5) { statusDiv.innerHTML = '<span style="color:#ff4d4d;">⚠️ الرجاء إدخال رقم المعاملة (TXID).</span>'; return; }
+    statusDiv.innerHTML = '<span style="color:#f5c842;">⏳ جاري إرسال الطلب...</span>';
+    try {
+        const res = await fetch('/api/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegram_id: TELEGRAM_ID, amount, txid })
+        });
+        const data = await res.json();
+        if (data.success) {
+            statusDiv.innerHTML = '<span style="color:#00c076;">✅ ' + data.message + '</span>';
+            usdtInput.value = ''; txidInput.value = ''; document.getElementById('vtxOutput').value = '';
+        } else {
+            statusDiv.innerHTML = '<span style="color:#ff4d4d;">❌ ' + data.message + '</span>';
         }
+    } catch (e) {
+        statusDiv.innerHTML = '<span style="color:#ff4d4d;">❌ خطأ في الاتصال بالسيرفر</span>';
     }
+}
 
-    // 8. دالة عرض الإشعارات (Toast)
-    function showToast(msg) {
-        const existing = document.querySelector('.toast-msg');
-        if(existing) existing.remove();
-        const div = document.createElement('div');
-        div.className = 'toast-msg fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white p-3 rounded-xl border border-primary/50 text-sm z-50 backdrop-blur-md';
-        div.innerText = msg;
-        document.body.appendChild(div);
-        setTimeout(() => div.remove(), 3000);
-    }
+// 7. إشعارات (Toast)
+function showToast(msg) {
+    const existing = document.querySelector('.toast-msg');
+    if(existing) existing.remove();
+    const div = document.createElement('div');
+    div.className = 'toast-msg fixed bottom-28 left-1/2 transform -translate-x-1/2 bg-black/80 text-white p-3 rounded-xl border border-primary/50 text-sm z-50 backdrop-blur-md max-w-xs text-center';
+    div.innerText = msg;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 3000);
+}
 
-    // جلب البيانات الأولية من السيرفر
-    fetchUserStatus();
-    // تحديث دوري كل 10 ثوانٍ
-    setInterval(fetchUserStatus, 10000);
+// تحديث تلقائي
+fetchUserStatus();
+setInterval(fetchUserStatus, 10000);
 </script>
 </body></html>
