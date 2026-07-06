@@ -1,531 +1,507 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vortex (VTX) - التعدين</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #0b0e1a;
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 12px;
-            background-image: radial-gradient(circle at 30% 20%, #1a2240 0%, #0b0e1a 90%);
-            overflow-x: hidden;
+<html class="dark" dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vortex - Pre-sale Trading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "outline-variant": "#4e4634",
+                            "outline": "#9a907b",
+                            "surface-container-low": "#181c20",
+                            "surface-tint": "#eec13c",
+                            "on-surface-variant": "#d1c5ae",
+                            "on-error-container": "#ffdad6",
+                            "inverse-surface": "#e0e2e8",
+                            "secondary": "#c4c5d7",
+                            "tertiary-fixed": "#dee2f7",
+                            "secondary-container": "#484b59",
+                            "on-secondary-fixed-variant": "#434654",
+                            "error-container": "#93000a",
+                            "on-tertiary-container": "#515667",
+                            "on-tertiary": "#2b3040",
+                            "on-tertiary-fixed-variant": "#414657",
+                            "on-secondary": "#2d303d",
+                            "surface-container-highest": "#323539",
+                            "primary": "#ffe7af",
+                            "on-surface": "#e0e2e8",
+                            "tertiary": "#e4e8fd",
+                            "surface-container-lowest": "#0b0f12",
+                            "surface-bright": "#36393e",
+                            "secondary-fixed-dim": "#c4c5d7",
+                            "surface-variant": "#323539",
+                            "inverse-primary": "#755b00",
+                            "on-tertiary-fixed": "#161b2a",
+                            "background": "#101417",
+                            "on-primary": "#3d2e00",
+                            "surface": "#101417",
+                            "secondary-fixed": "#e0e1f3",
+                            "on-primary-fixed": "#241a00",
+                            "primary-fixed-dim": "#eec13c",
+                            "on-primary-container": "#6c5400",
+                            "on-primary-fixed-variant": "#584400",
+                            "surface-container-high": "#272a2e",
+                            "surface-container": "#1c2024",
+                            "tertiary-container": "#c8cce1",
+                            "on-secondary-fixed": "#181b27",
+                            "error": "#ffb4ab",
+                            "inverse-on-surface": "#2d3135",
+                            "on-background": "#e0e2e8",
+                            "primary-fixed": "#ffe08f",
+                            "tertiary-fixed-dim": "#c1c6da",
+                            "on-secondary-container": "#b9bbcc",
+                            "primary-container": "#f5c842",
+                            "surface-dim": "#101417",
+                            "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "stack-sm": "8px",
+                            "safe-area": "20px",
+                            "stack-lg": "32px",
+                            "gutter": "12px",
+                            "card-padding": "16px",
+                            "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                            "label-caps": ["IBM Plex Sans", "sans-serif"],
+                            "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+                            "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+                            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                            "body-sm": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                            "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                            "display-lg-mobile": ["32px", { "lineHeight": "38px", "fontWeight": "700" }],
+                            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                            "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
         }
-        .container {
-            max-width: 420px;
-            width: 100%;
-            background: rgba(16, 22, 44, 0.9);
-            backdrop-filter: blur(16px);
-            border-radius: 40px;
-            padding: 24px 18px 30px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            box-shadow: 0 25px 80px rgba(0,0,0,0.9);
-            position: relative;
-            overflow: hidden;
-        }
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(245, 200, 66, 0.03), transparent, rgba(245, 200, 66, 0.03), transparent);
-            animation: spinGlow 20s linear infinite;
-            z-index: 0;
-        }
-        @keyframes spinGlow { 100% { transform: rotate(360deg); } }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; z-index: 1; }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-icon {
-            width: 44px; height: 44px;
-            background: linear-gradient(145deg, #f5c842, #b8860b);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 900;
-            color: #0b0e1a;
-            box-shadow: 0 4px 15px rgba(245, 200, 66, 0.4);
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-        @keyframes logoPulse { 0%, 100% { box-shadow: 0 4px 15px rgba(245, 200, 66, 0.4); } 50% { box-shadow: 0 4px 30px rgba(245, 200, 66, 0.8); } }
-        .logo-text { font-size: 22px; font-weight: 800; color: #f5c842; letter-spacing: 1.5px; }
-        .logo-text span { color: #fff; font-weight: 300; }
-        .user-badge {
-            background: #1f284a;
-            padding: 6px 12px;
-            border-radius: 40px;
-            font-size: 12px;
-            color: #b0c4f0;
-            border: 1px solid #2f3a66;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .counter-box {
-            background: linear-gradient(145deg, #11192e, #060a14);
-            border-radius: 24px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 18px;
-            border: 1px solid #1f284a;
-            position: relative;
-            z-index: 1;
-        }
-        .counter-box .number {
-            font-size: 48px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #f5c842, #d49b1a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.2;
-            transition: all 0.3s;
-        }
-        .counter-box .target-bar {
-            width: 100%;
-            height: 8px;
-            background: #1a2340;
-            border-radius: 10px;
-            margin-top: 12px;
-            overflow: hidden;
-        }
-        .counter-box .target-bar .fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #f5c842, #f5a623);
-            border-radius: 10px;
-            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .mine-card {
-            background: linear-gradient(145deg, #111a35, #080d1e);
-            border-radius: 28px;
-            padding: 20px 16px;
-            margin: 12px 0;
-            border: 1px solid #1f284a;
-            position: relative;
-            z-index: 1;
-        }
-
-        .click-btn {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 60px;
-            font-size: 24px;
-            font-weight: 800;
-            background: linear-gradient(145deg, #f5c842, #d49b1a);
-            color: #0b0e1a;
-            box-shadow: 0 8px 0 #7a5c10, 0 12px 40px rgba(245, 200, 66, 0.2);
-            cursor: pointer;
-            transition: all 0.08s linear;
-            touch-action: manipulation;
-            position: relative;
-            overflow: hidden;
-            animation: btnGlow 2s infinite alternate;
-        }
-        @keyframes btnGlow { 0% { box-shadow: 0 8px 0 #7a5c10, 0 12px 40px rgba(245, 200, 66, 0.2); } 100% { box-shadow: 0 8px 0 #7a5c10, 0 12px 60px rgba(245, 200, 66, 0.5); } }
-        .click-btn:active {
-            transform: translateY(6px);
-            box-shadow: 0 2px 0 #7a5c10;
-        }
-        .click-btn:disabled { opacity: 0.5; transform: translateY(4px); pointer-events: none; }
-
-        .coin-burst { position: fixed; pointer-events: none; z-index: 999; }
-        .coin {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            background: radial-gradient(circle at 30% 30%, #f5c842, #b8860b);
-            border-radius: 50%;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-            animation: flyCoin 1.2s ease-out forwards;
-        }
-        @keyframes flyCoin {
-            0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0) rotate(720deg); }
-        }
-
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; position: relative; z-index: 1; }
-        .info-item { background: #0d1428; padding: 12px 6px; border-radius: 16px; text-align: center; border: 1px solid #1a2340; }
-        .info-item .val { font-size: 20px; font-weight: 700; color: #f5c842; }
-        .info-item .lbl { font-size: 11px; color: #6a7aa0; margin-top: 4px; }
-
-        .actions { display: flex; gap: 10px; margin: 10px 0; position: relative; z-index: 1; }
-        .actions button {
-            flex: 1; padding: 12px 6px; border-radius: 40px;
-            border: 1px solid #2f3a66; background: #0d1428;
-            color: #b0c4f0; font-weight: 600; font-size: 13px; cursor: pointer;
-            transition: 0.2s;
-        }
-        .actions button:active { transform: scale(0.95); background: #1f284a; }
-        .actions .buy-btn { border-color: #f5c842; color: #f5c842; }
-        .actions .referral-btn { border-color: #44bb44; color: #44bb44; }
-
-        .waiting-msg { text-align: center; padding: 20px 10px; color: #8892b0; position: relative; z-index: 1; }
-        .waiting-msg .icon { font-size: 48px; display: block; margin-bottom: 12px; }
-        .waiting-msg h3 { color: #f5c842; margin-bottom: 8px; }
-
-        .toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: #1f1f3a; color: #fff; padding: 12px 24px;
-            border-radius: 60px; border: 1px solid #f5c842;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9); font-size: 14px;
-            display: none; z-index: 999; max-width: 90%; text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        /* مودال الشراء والإحالة */
-        .modal {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center; align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        .modal-content {
-            background: #161f3a;
-            max-width: 400px;
-            width: 100%;
-            padding: 24px;
-            border-radius: 28px;
-            border: 1px solid #f5c842;
-            color: #fff;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-content h2 { color: #f5c842; margin-bottom: 16px; }
-        .modal-content input, .modal-content textarea {
-            width: 100%; padding: 12px; margin: 8px 0;
-            border-radius: 12px; border: 1px solid #2f3a66;
-            background: #0d1428; color: #fff;
-        }
-        .modal-content .btn-close {
-            background: #ff4444; color: #fff; border: none;
-            padding: 10px 20px; border-radius: 30px; cursor: pointer;
-            float: right;
-        }
-        .modal-content .btn-submit {
-            background: #f5c842; color: #000; border: none;
-            padding: 12px; border-radius: 30px; cursor: pointer;
-            width: 100%; font-weight: bold;
-        }
-        .wallet-address {
-            background: #0d1428; padding: 12px; border-radius: 12px;
-            font-size: 12px; word-break: break-all;
-            border: 1px dashed #f5c842; margin: 12px 0;
-        }
-        .referral-box {
-            background: #0d1428; padding: 16px; border-radius: 16px;
-            text-align: center; border: 1px solid #44bb44;
-            margin: 12px 0;
-        }
-        .referral-box .code {
-            font-size: 24px; font-weight: bold; color: #f5c842;
-            letter-spacing: 2px;
-        }
-        .referral-box .count { color: #44bb44; }
+    </script>
+<style>
+        .glass-card { background: rgba(18, 22, 29, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(238, 193, 60, 0.15); }
+        .vortex-pulse { animation: pulse-gold 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .green-pulse { animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-gold { 0%, 100% { opacity: 1; text-shadow: 0 0 15px rgba(245, 200, 66, 0.5); } 50% { opacity: .7; text-shadow: 0 0 5px rgba(245, 200, 66, 0.2); } }
+        @keyframes pulse-green { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+        .gold-gradient { background: linear-gradient(135deg, #f5c842 0%, #eec13c 100%); }
+        .gold-glow { box-shadow: 0 0 20px rgba(238, 193, 60, 0.3); }
+        body { min-height: max(884px, 100dvh); }
+        #coin-container { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; z-index: 0; pointer-events: none; opacity: 0.4; mix-blend-mode: screen; }
+        .order-row-highlight { transition: background-color 0.4s ease; }
+        .update-flash { animation: flash-green 0.8s ease-out; }
+        @keyframes flash-green { 0% { background-color: rgba(74, 222, 128, 0.2); } 100% { background-color: transparent; } }
+        .referral-box { background: rgba(16, 20, 30, 0.8); border: 1px solid rgba(245, 200, 66, 0.3); border-radius: 16px; padding: 16px; margin: 16px 0; }
+        .referral-code { font-size: 20px; font-weight: bold; color: #f5c842; letter-spacing: 2px; direction: ltr; text-align: center; word-break: break-all; background: #0b0e1a; padding: 8px 12px; border-radius: 12px; border: 1px dashed #f5c842; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-area">
-                <div class="logo-icon">V</div>
-                <div class="logo-text">ORTEX <span>| VTX</span></div>
-            </div>
-            <div class="user-badge" id="usernameDisplay">@{{USERNAME}}</div>
-        </div>
+<body class="bg-background text-on-background antialiased min-h-screen relative overflow-x-hidden font-body-sm pb-24">
+<div class="fixed inset-0 z-[-1] pointer-events-none">
+<div class="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-primary/5 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[20%] left-[-20%] w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[120px]"></div>
+</div>
+<div id="coin-container"></div>
 
-        <div class="counter-box">
-            <div style="font-size:13px;color:#8892b0;">👥 إجمالي المسجلين</div>
-            <div class="number" id="totalUsers">{{TOTAL_USERS}}</div>
-            <div style="font-size:13px;color:#5b6a8f;">الهدف: 20,000 مستخدم</div>
-            <div class="target-bar"><div class="fill" id="targetFill" style="width: {{PROGRESS}}%;"></div></div>
-        </div>
+<!-- TopAppBar -->
+<header class="flex flex-row-reverse justify-between items-center px-gutter py-stack-sm w-full fixed top-0 z-50 bg-transparent backdrop-blur-xl border-b border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="object-cover w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzMhz5P_1aBVWp9fKPzgYejEujMgOVNQ1Ap5NQ0x1XciN3iWrhtXvX27VHXcMKeC8zfCZl8qHPzG8JBCHXikk--zgNLzafZftp1eMqeYrnu8XommF81ixj56bhQ28Bs-P_guiq0oibTLjNYJawHijSRwLPQDf4GOUa-OKWtiaomX5WhQekJu8UXd7SS0Qje9NrMZPwI-1Uks1w7N9QdtNx2nfACp69MWfbGdevX5iUAzFPxbZqSPEXUx739swqb6k9hP5hKgy-Yz8"/>
+</div>
+<h1 class="font-headline-md text-headline-md-mobile text-primary tracking-tight">@{{USERNAME}}</h1>
+</div>
+<div>
+<span class="font-body-lg text-body-lg text-primary font-semibold px-3 py-1.5 rounded-lg bg-surface-container/50 border border-primary/20 backdrop-blur-md">{{POINTS}} VTX</span>
+</div>
+</header>
 
-        <div id="miningArea"></div>
+<main class="pt-[80px] px-gutter w-full max-w-4xl mx-auto space-y-stack-md relative z-10">
+<!-- Asset Header -->
+<section class="flex flex-col items-center justify-center py-stack-md relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-3 py-1 bg-surface-container rounded-full border border-outline-variant/50 font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-[#4ade80] green-pulse inline-block"></span> مباشر
+</span>
+<h2 class="font-headline-md text-headline-md text-on-background">VTX / USDT</h2>
+</div>
+<div class="text-center">
+<div class="font-display-lg-mobile text-display-lg-mobile text-primary font-bold vortex-pulse" id="live-price">0.1387</div>
+<div class="font-body-sm text-body-sm text-[#4ade80] flex items-center justify-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12.5% (24h)
+</div>
+</div>
+</section>
 
-        <!-- قسم الإحالة -->
-        <div class="referral-box">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span>🏆 كود الإحالة الخاص بك</span>
-                <span class="count">👥 {{REFERRALS_COUNT}} مدعو</span>
-            </div>
-            <div class="code" id="refCodeDisplay">{{REFERRAL_CODE}}</div>
-            <button onclick="copyReferralCode()" style="margin-top:8px;background:#44bb44;color:#000;border:none;padding:6px 16px;border-radius:20px;cursor:pointer;">📋 نسخ الكود</button>
-        </div>
+<!-- الشارت الوهمي -->
+<section class="glass-card rounded-xl p-card-padding h-[350px] flex flex-col relative overflow-hidden">
+<div class="flex justify-between items-center mb-4 z-10">
+<div class="flex gap-2">
+<button class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary">1H</button>
+<button class="px-2 py-1 text-xs bg-surface-container-high text-primary rounded border border-primary/20">4H</button>
+<button class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary">1D</button>
+<button class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary">1W</button>
+</div>
+<div class="flex gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-sm cursor-pointer hover:text-primary">fullscreen</span></div>
+</div>
+<div class="flex-grow w-full relative" dir="ltr" id="tvchart"></div>
+</section>
 
-        <div class="info-grid">
-            <div class="info-item"><div class="val" id="pointsDisplay">{{POINTS}}</div><div class="lbl">⭐ نقاطك</div></div>
-            <div class="info-item"><div class="val" id="clicksLeft">{{MAX_CLICKS}}</div><div class="lbl">⚡ الضغطات المتبقية</div></div>
-        </div>
+<!-- RSI وهمي -->
+<section class="glass-card rounded-xl p-3 h-[120px] flex flex-col relative overflow-hidden">
+<div class="flex justify-between items-center mb-2 z-10">
+<span class="font-label-caps text-[10px] text-on-surface-variant">RSI (14)</span>
+<span class="text-primary font-semibold text-xs">64.15</span>
+</div>
+<div class="flex-grow w-full relative opacity-80">
+<div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
+<div class="border-t border-primary/20 w-full flex justify-end"><span class="text-[8px] text-primary/40 -mt-1.5">70</span></div>
+<div class="border-t border-primary/10 w-full"></div>
+<div class="border-t border-primary/20 w-full flex justify-end"><span class="text-[8px] text-primary/40 -mt-1.5">30</span></div>
+</div>
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100"><path d="M0 60 Q 30 70, 50 45 T 100 15" fill="none" stroke="#eec13c" stroke-width="1.5"></path></svg>
+</div>
+</section>
 
-        <div class="actions">
-            <button id="boostBtn" class="buy-btn">⚡ شراء هامش</button>
-            <button id="purchaseBtn" class="buy-btn">💎 شراء عملة</button>
-            <button id="refreshBtn">🔄 تحديث</button>
-        </div>
-    </div>
+<!-- Order Book وهمي -->
+<section class="glass-card rounded-2xl p-card-padding border-t border-[#4ade80]/20 relative overflow-hidden z-10">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-md text-body-lg text-[#4ade80] flex items-center gap-2"><span class="material-symbols-outlined text-sm">bar_chart_4_bars</span> أكبر أوامر الشراء الحالية</h3>
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">تحديث مباشر</span>
+</div>
+<div class="space-y-2" id="order-book-container">
+<div class="grid grid-cols-3 text-[10px] font-label-caps text-on-surface-variant/50 pb-1 border-b border-outline-variant/20">
+<div class="text-right">السعر (USDT)</div><div class="text-center">الكمية (VTX)</div><div class="text-left">الإجمالي (USDT)</div>
+</div>
+<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[85%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1387</div><div class="text-center text-on-surface font-semibold qty-cell">1,250,000</div><div class="text-left text-on-surface-variant total-cell">173,375</div></div></div>
+<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[65%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1386</div><div class="text-center text-on-surface font-semibold qty-cell">840,000</div><div class="text-left text-on-surface-variant total-cell">116,424</div></div></div>
+<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[95%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1385</div><div class="text-center text-on-surface font-semibold qty-cell">2,100,000</div><div class="text-left text-on-surface-variant total-cell">290,850</div></div></div>
+<div class="relative group order-row-highlight"><div class="absolute inset-0 bg-[#4ade80]/5 w-[40%] rounded-r order-depth-bar"></div><div class="grid grid-cols-3 py-1.5 relative z-10 text-xs"><div class="text-right text-[#4ade80] font-bold price-cell">0.1384</div><div class="text-center text-on-surface font-semibold qty-cell">520,000</div><div class="text-left text-on-surface-variant total-cell">71,968</div></div></div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
+<span class="text-[10px] font-label-caps text-[#4ade80]/80">سيولة مؤسسية نشطة</span>
+</div>
+</section>
 
-    <!-- مودال الشراء -->
-    <div id="purchaseModal" class="modal">
-        <div class="modal-content">
-            <button class="btn-close" onclick="closeModal('purchaseModal')">✕</button>
-            <h2>💎 شراء عملة Vortex (USDT)</h2>
-            <p style="font-size:14px;color:#8892b0;">قم بتحويل المبلغ إلى العنوان أدناه عبر شبكة BSC (Smart Chain).</p>
-            <div class="wallet-address">
-                <strong>عنوان المحفظة:</strong><br>
-                <span id="walletAddress">{{USDT_WALLET}}</span>
-            </div>
-            <p style="font-size:12px;color:#8892b0;">📌 بعد التحويل، أدخل رقم المعاملة (TXID) والمبلغ.</p>
-            <input type="number" id="purchaseAmount" placeholder="المبلغ بالـ USDT" min="1" step="0.5">
-            <input type="text" id="purchaseTxid" placeholder="رقم المعاملة (TXID)">
-            <button class="btn-submit" onclick="submitPurchase()">📤 تأكيد الشراء</button>
-            <div id="purchaseStatus" style="margin-top:12px;font-size:14px;"></div>
-        </div>
-    </div>
+<!-- قسم الإحالات (المدمج مع السيرفر) -->
+<section class="glass-card rounded-2xl p-card-padding border-t border-primary/30 relative overflow-hidden z-10">
+<h3 class="font-headline-md text-headline-md text-primary mb-3 flex items-center gap-2"><span class="material-symbols-outlined">group</span> دعوة الأصدقاء</h3>
+<div class="referral-box">
+<div class="flex justify-between items-center mb-2">
+<span class="text-on-surface-variant text-sm">👥 عدد المدعوين: <span class="text-primary font-bold" id="refCountDisplay">{{REFERRALS_COUNT}}</span></span>
+<span class="text-on-surface-variant text-sm">🏅 مكافأتك: 10 نقاط لكل مدعو</span>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center gap-2 bg-black/30 p-3 rounded-xl border border-primary/10">
+<span class="text-on-surface-variant text-xs">كود الإحالة الخاص بك:</span>
+<span class="referral-code text-sm" id="refCodeDisplay">{{REFERRAL_CODE}}</span>
+<button onclick="copyReferral()" class="bg-primary/20 hover:bg-primary/40 text-primary p-2 rounded-xl transition-colors"><span class="material-symbols-outlined text-sm">content_copy</span></button>
+</div>
+<button onclick="shareReferral()" class="w-full bg-[#1a8cff] hover:bg-[#1a8cff]/80 text-white font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">send</span> مشاركة الرابط</button>
+</div>
+</div>
+</section>
 
-    <div id="toast" class="toast"></div>
+<!-- Pre-sale Purchase Widget (مربوط بالسيرفر) -->
+<section class="glass-card rounded-2xl p-card-padding border-t border-primary/30 relative overflow-hidden mt-stack-lg z-10">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2"><span class="material-symbols-outlined">rocket_launch</span> شراء في مرحلة ما قبل البيع</h3>
+<div class="space-y-4 relative z-10">
+<div class="bg-surface-container-lowest border border-outline-variant focus-within:border-primary focus-within:shadow-[0_0_10px_rgba(245,200,66,0.2)] rounded-lg p-3 transition-all duration-300">
+<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>تدفع (USDT)</span><span>الرصيد المتوفر: <span id="userBalanceDisplay">5,000.00</span></span></div>
+<div class="flex justify-between items-center">
+<input class="bg-transparent border-none outline-none text-display-lg-mobile font-display-lg-mobile text-on-background w-full p-0 focus:ring-0 placeholder:text-on-surface-variant/30" dir="ltr" placeholder="0.00" type="number" id="usdtInput"/>
+<div class="flex items-center gap-2 bg-surface-container px-2 py-1 rounded"><span class="font-label-caps text-label-caps text-on-surface">USDT</span></div>
+</div>
+</div>
+<div class="flex justify-center -my-2 relative z-20"><div class="bg-surface-container border border-outline-variant rounded-full p-1 text-on-surface-variant"><span class="material-symbols-outlined text-sm">swap_vert</span></div></div>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3">
+<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>تحصل على (VTX)</span><span id="buy-rate-label">سعر الشراء: 0.1387 USDT</span></div>
+<div class="flex justify-between items-center">
+<input class="bg-transparent border-none outline-none text-display-lg-mobile font-display-lg-mobile text-primary/70 w-full p-0 focus:ring-0 placeholder:text-primary/20 pointer-events-none" dir="ltr" placeholder="0.00" readonly type="number" id="vtxOutput"/>
+<div class="flex items-center gap-2 bg-primary/10 px-2 py-1 rounded"><span class="font-label-caps text-label-caps text-primary">VTX</span></div>
+</div>
+</div>
 
-    <script>
-        const TELEGRAM_ID = {{TELEGRAM_ID}};
-        const REFERRAL_CODE = '{{REFERRAL_CODE}}';
-        let miningOpen = {{MINING_OPEN}} === 'true';
-        let currentPoints = {{POINTS}};
-        let maxClicks = {{MAX_CLICKS}};
-        let clicksUsed = {{CLICKS_USED}};
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3">
+<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>📎 رقم المعاملة (TXID)</span></div>
+<input class="bg-transparent border border-primary/20 rounded-lg p-2 w-full text-sm text-on-background focus:border-primary outline-none" placeholder="أدخل TXID من محفظتك..." id="txidInput"/>
+</div>
 
-        const miningArea = document.getElementById('miningArea');
-        const totalUsersEl = document.getElementById('totalUsers');
-        const targetFill = document.getElementById('targetFill');
-        const pointsDisplay = document.getElementById('pointsDisplay');
-        const clicksLeft = document.getElementById('clicksLeft');
-        const toast = document.getElementById('toast');
+<div class="flex gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 items-start">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">warning</span>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold text-xs">تنبيه:</span>
+<p class="text-on-surface-variant text-[11px] leading-relaxed">بمجرد إتمام الشراء، سيتم تجميد الأموال المشتراة وتأمينها. سيتم فك التجميد فور إدراج العملة في المنصات.</p>
+</div>
+</div>
+<button onclick="submitPurchase()" class="w-full gold-gradient text-on-primary font-headline-md text-headline-md-mobile py-4 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all duration-200 gold-glow mt-2">تأكيد الشراء</button>
+<div id="purchaseStatus" class="text-center text-sm mt-2"></div>
+</div>
+</section>
+</main>
 
-        function showToast(msg, isError = false) {
-            toast.textContent = msg;
-            toast.style.display = 'block';
-            toast.style.borderColor = isError ? '#ff4444' : '#f5c842';
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex flex-row-reverse justify-around items-center h-20 pb-safe px-4 bg-surface-container/80 backdrop-blur-md border-t border-primary/20 shadow-[0_-4px_20px_rgba(238,193,60,0.15)] rounded-t-xl md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200 w-16" href="/app">
+<span class="material-symbols-outlined text-[24px] mb-1">home</span><span class="font-label-caps text-[10px]">الرئيسية</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200 w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">group</span><span class="font-label-caps text-[10px]">الإحالات</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary filter drop-shadow-[0_0_8px_rgba(238,193,60,0.6)] active:scale-90 duration-200 w-16 relative" href="#">
+<div class="absolute -top-3 w-10 h-10 bg-primary/10 rounded-full blur-md"></div>
+<span class="material-symbols-outlined text-[28px] mb-1" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-label-caps text-[10px]">شراء</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim transition-colors active:scale-90 duration-200 w-16" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">person</span><span class="font-label-caps text-[10px]">الحساب</span>
+</a>
+</nav>
+
+<script>
+    // --- متغيرات السيرفر المدمجة ---
+    const TELEGRAM_ID = {{TELEGRAM_ID}};
+    const REFERRAL_CODE = '{{REFERRAL_CODE}}';
+    let currentLivePrice = 0.1387; // السعر الافتراضي
+    let userPoints = {{POINTS}};
+
+    // تحديث واجهة المستخدم بالبيانات الحقيقية من السيرفر
+    async function fetchUserStatus() {
+        try {
+            const res = await fetch(`/api/status?telegram_id=${TELEGRAM_ID}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error('فشل التحديث');
+            
+            // تحديث النقاط المعروضة
+            userPoints = data.points || 0;
+            document.querySelector('.font-body-lg.text-primary.font-semibold').innerText = userPoints + ' VTX';
+            
+            // تحديث عدد المدعوين
+            const refCount = data.referrals_count || 0;
+            document.getElementById('refCountDisplay').innerText = refCount;
+            
+            // تحديث السعر من السيرفر (إن كان موجوداً)
+            if (data.vtx_price) {
+                currentLivePrice = data.vtx_price;
+            }
+            document.getElementById('live-price').innerText = currentLivePrice.toFixed(4);
+            document.getElementById('buy-rate-label').innerText = `سعر الشراء: ${currentLivePrice.toFixed(4)} USDT`;
+            
+        } catch (e) {
+            console.log('⚠️ تحديث تلقائي فشل، نستخدم البيانات المحلية');
         }
+    }
 
-        function copyReferralCode() {
-            const code = document.getElementById('refCodeDisplay').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('✅ تم نسخ الكود: ' + code);
-            }).catch(() => {
-                showToast('⚠️ الرجاء نسخ الكود يدوياً: ' + code);
+    // 1. تقلب السعر الوهمي (مع العودة للسعر الأساسي)
+    setInterval(() => {
+        const change = (Math.random() - 0.5) * 0.0002;
+        let newPrice = currentLivePrice + change;
+        newPrice = Math.max(0.1300, Math.min(0.1450, newPrice)); // حدود آمنة
+        currentLivePrice = newPrice;
+        
+        const priceEl = document.getElementById('live-price');
+        priceEl.innerText = currentLivePrice.toFixed(4);
+        const rateLabel = document.getElementById('buy-rate-label');
+        if (rateLabel) rateLabel.innerText = `سعر الشراء: ${currentLivePrice.toFixed(4)} USDT`;
+        
+        // تحديث الخلفية الخضراء/الحمراء
+        priceEl.classList.add('transition-colors', 'duration-300');
+        if (change > 0) { priceEl.classList.replace('text-primary', 'text-[#4ade80]'); } 
+        else { priceEl.classList.replace('text-primary', 'text-[#f87171]'); }
+        setTimeout(() => { priceEl.classList.remove('text-[#4ade80]', 'text-[#f87171]'); priceEl.classList.add('text-primary'); }, 600);
+    }, 3000);
+
+    // 2. تحديث دفتر الأوامر الوهمي
+    setInterval(() => {
+        const rows = document.querySelectorAll('.order-row-highlight');
+        const row = rows[Math.floor(Math.random() * rows.length)];
+        if (!row) return;
+        const priceCell = row.querySelector('.price-cell');
+        const qtyCell = row.querySelector('.qty-cell');
+        const totalCell = row.querySelector('.total-cell');
+        const depthBar = row.querySelector('.order-depth-bar');
+        
+        const oldPrice = parseFloat(priceCell.innerText);
+        const newPrice = (oldPrice + (Math.random() - 0.5) * 0.0001).toFixed(4);
+        const oldQty = parseInt(qtyCell.innerText.replace(/,/g, ''));
+        const newQty = Math.max(10000, Math.floor(oldQty + (Math.random() - 0.5) * 40000));
+        const newTotal = (newPrice * newQty).toLocaleString(undefined, { maximumFractionDigits: 0 });
+        
+        row.classList.add('update-flash');
+        priceCell.innerText = newPrice;
+        qtyCell.innerText = newQty.toLocaleString();
+        totalCell.innerText = newTotal;
+        depthBar.style.width = `${Math.floor(Math.random() * 60) + 30}%`;
+        setTimeout(() => row.classList.remove('update-flash'), 800);
+    }, 3000);
+
+    // 3. الشارت الوهمي (ثلاثي الأبعاد و Lightweight Charts)
+    document.addEventListener('DOMContentLoaded', () => {
+        // 3D Coin
+        const container = document.getElementById('coin-container');
+        if(container && window.THREE) {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width/height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
+            const light = new THREE.PointLight(0xf5c842, 2, 100);
+            light.position.set(5,5,5);
+            scene.add(light);
+            const coinGroup = new THREE.Group();
+            const geometry = new THREE.CylinderGeometry(2, 2, 0.4, 64);
+            const material = new THREE.MeshPhongMaterial({ color: 0xf5c842, shininess: 100 });
+            const coinBody = new THREE.Mesh(geometry, material);
+            coinBody.rotation.x = Math.PI/2;
+            coinGroup.add(coinBody);
+            scene.add(coinGroup);
+            camera.position.z = 5;
+            let time = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                time += 0.01;
+                coinGroup.rotation.y += 0.02;
+                coinGroup.position.y = Math.sin(time) * 0.2;
+                renderer.render(scene, camera);
+            }
+            animate();
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
             });
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        // Lightweight Charts (وهمي)
+        const chartContainer = document.getElementById('tvchart');
+        if(chartContainer && window.LightweightCharts) {
+            const chart = LightweightCharts.createChart(chartContainer, {
+                layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#9a907b' },
+                grid: { vertLines: { color: 'rgba(154,144,123,0.1)' }, horzLines: { color: 'rgba(154,144,123,0.1)' } },
+                rightPriceScale: { borderVisible: false },
+                timeScale: { borderVisible: false, timeVisible: true },
+            });
+            const series = chart.addCandlestickSeries({ upColor: '#4ade80', downColor: '#f87171', borderVisible: false });
+            const data = [];
+            let t = Math.floor(Date.now()/1000) - 100*3600;
+            let p = 0.1350;
+            for(let i=0; i<100; i++) {
+                const open = p;
+                const close = open + (Math.random()-0.5)*0.002;
+                data.push({ time: t, open, high: Math.max(open,close)+0.001, low: Math.min(open,close)-0.001, close });
+                p = close;
+                t += 3600;
+            }
+            series.setData(data);
+            chart.timeScale().fitContent();
+            new ResizeObserver(entries => { if(entries.length) chart.applyOptions({ height: entries[0].contentRect.height, width: entries[0].contentRect.width }); }).observe(chartContainer);
+        }
+    });
 
-        // دالة تأثير العملات
-        function burstCoins(x, y) {
-            for (let i = 0; i < 8; i++) {
-                const coin = document.createElement('div');
-                coin.className = 'coin';
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 80 + Math.random() * 120;
-                coin.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-                coin.style.setProperty('--ty', Math.sin(angle) * dist - 80 + 'px');
-                coin.style.left = (x - 12) + 'px';
-                coin.style.top = (y - 12) + 'px';
-                document.body.appendChild(coin);
-                setTimeout(() => coin.remove(), 1200);
+    // 4. ربط حقل USDT بـ VTX تلقائياً
+    document.addEventListener('input', (e) => {
+        if(e.target.id === 'usdtInput') {
+            const val = parseFloat(e.target.value);
+            const output = document.getElementById('vtxOutput');
+            if(!isNaN(val) && val > 0) {
+                output.value = (val / currentLivePrice).toFixed(2);
+                output.classList.remove('text-primary/70');
+                output.classList.add('text-primary');
+            } else {
+                output.value = '';
+                output.classList.add('text-primary/70');
             }
         }
+    });
 
-        async function fetchStatus() {
-            try {
-                const res = await fetch(`/api/status?telegram_id=${TELEGRAM_ID}`);
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'خطأ');
-                
-                totalUsersEl.textContent = data.total_users;
-                targetFill.style.width = Math.min((data.total_users / 20000) * 100, 100) + '%';
-                currentPoints = data.points;
-                maxClicks = data.max_clicks;
-                clicksUsed = data.clicks_used;
-                miningOpen = data.mining_open;
-                pointsDisplay.textContent = currentPoints;
-                clicksLeft.textContent = maxClicks - clicksUsed;
-                renderMiningUI();
-            } catch (e) {
-                showToast('فشل الاتصال بالسيرفر', true);
-            }
-        }
-
-        function renderMiningUI() {
-            const remaining = maxClicks - clicksUsed;
-            const progressClick = Math.min((clicksUsed / maxClicks) * 100, 100);
-
-            if (!miningOpen) {
-                miningArea.innerHTML = `
-                    <div class="waiting-msg">
-                        <span class="icon">⏳</span>
-                        <h3>التعدين لم يفتح بعد</h3>
-                        <p>سيتم فتحه تلقائياً عند اكتمال 20,000 مستخدم</p>
-                        <div style="margin-top:12px;font-size:12px;color:#5b6a8f;">عدد المسجلين: ${totalUsersEl.textContent}</div>
-                    </div>
-                `;
-                return;
-            }
-
-            if (remaining <= 0) {
-                miningArea.innerHTML = `
-                    <div class="waiting-msg">
-                        <span class="icon">🏁</span>
-                        <h3>استنفذت كل الضغطات</h3>
-                        <p>اشتري هامشاً إضافياً لمواصلة التعدين</p>
-                        <button onclick="document.getElementById('boostBtn').click()" style="margin-top:16px;padding:12px 30px;border-radius:40px;border:1px solid #f5c842;background:transparent;color:#f5c842;font-weight:bold;">شراء هامش</button>
-                    </div>
-                `;
-                return;
-            }
-
-            miningArea.innerHTML = `
-                <div class="mine-card">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                        <h2 style="font-size:18px;font-weight:600;">⛏️ التعدين</h2>
-                        <span style="background:#1f2a50;padding:4px 16px;border-radius:40px;font-size:18px;font-weight:700;color:#f5c842;">+${currentPoints}</span>
-                    </div>
-                    <div style="font-size:13px;color:#8892b0;">${clicksUsed} / ${maxClicks} ضغطة</div>
-                    <div style="width:100%;height:8px;background:#1a2340;border-radius:10px;margin:8px 0 16px;">
-                        <div class="fill" id="clickProgressFill" style="width:${progressClick}%;height:100%;background:linear-gradient(90deg,#f5c842,#ff7b00);border-radius:10px;transition:width 0.4s ease;"></div>
-                    </div>
-                    <button class="click-btn" id="clickBtn">⚡ اضغط للتعدين</button>
-                    <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px;color:#6a7aa0;">
-                        <span>⚡ متبقي: ${remaining}</span>
-                        <span>⏱️ 3 ثوان</span>
-                    </div>
-                </div>
-            `;
-            document.getElementById('clickBtn').addEventListener('click', handleClick);
-        }
-
-        async function handleClick(e) {
-            const btn = document.getElementById('clickBtn');
-            if (!btn || btn.disabled) return;
-
-            const rect = btn.getBoundingClientRect();
-            burstCoins(rect.left + rect.width/2, rect.top + rect.height/2);
-
-            btn.disabled = true;
-            btn.textContent = '⏳ جارٍ...';
-
-            try {
-                const res = await fetch('/api/click', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ telegram_id: TELEGRAM_ID })
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    if (res.status === 429) showToast(`⏳ انتظر ${Math.ceil(data.wait || 3)} ثوانٍ`, true);
-                    else showToast(data.message || 'خطأ', true);
-                    btn.disabled = false;
-                    btn.textContent = '⚡ اضغط للتعدين';
-                    return;
-                }
-                if (data.success) {
-                    currentPoints = data.new_points;
-                    clicksUsed = data.clicks_used;
-                    maxClicks = data.max_clicks;
-                    pointsDisplay.textContent = currentPoints;
-                    clicksLeft.textContent = maxClicks - clicksUsed;
-                    showToast('✅ +1 نقطة');
-                    renderMiningUI();
-                } else {
-                    showToast(data.message, true);
-                }
-            } catch (e) {
-                showToast('خطأ في الشبكة', true);
-            }
-            setTimeout(() => {
-                const newBtn = document.getElementById('clickBtn');
-                if (newBtn) { newBtn.disabled = false; newBtn.textContent = '⚡ اضغط للتعدين'; }
-            }, 500);
-        }
-
-        // شراء الهامش
-        document.getElementById('boostBtn').addEventListener('click', async function() {
-            const extra = prompt('كم ضغطة إضافية تريد شراءها؟ (مثلاً 500)');
-            if (!extra || isNaN(extra) || parseInt(extra) <= 0) return;
-            try {
-                const res = await fetch('/api/buy_boost', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ telegram_id: TELEGRAM_ID, extra_clicks: parseInt(extra) })
-                });
-                const data = await res.json();
-                if (data.success) { showToast(data.message); fetchStatus(); }
-                else showToast(data.message, true);
-            } catch (e) { showToast('خطأ في الاتصال', true); }
+    // 5. دالة نسخ كود الإحالة
+    function copyReferral() {
+        const code = document.getElementById('refCodeDisplay').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            showToast('✅ تم نسخ الكود: ' + code);
+        }).catch(() => {
+            alert('انسخ الكود يدوياً: ' + code);
         });
+    }
 
-        // شراء العملة (فتح المودال)
-        document.getElementById('purchaseBtn').addEventListener('click', function() {
-            openModal('purchaseModal');
-        });
-
-        // تقديم طلب الشراء
-        async function submitPurchase() {
-            const amount = document.getElementById('purchaseAmount').value;
-            const txid = document.getElementById('purchaseTxid').value;
-            const statusDiv = document.getElementById('purchaseStatus');
-
-            if (!amount || !txid || parseFloat(amount) < 1) {
-                statusDiv.innerHTML = '<span style="color:#ff4444;">⚠️ الرجاء إدخال المبلغ ورقم المعاملة بشكل صحيح.</span>';
-                return;
-            }
-
-            statusDiv.innerHTML = '<span style="color:#f5c842;">⏳ جاري إرسال الطلب...</span>';
-
-            try {
-                const res = await fetch('/api/purchase', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ telegram_id: TELEGRAM_ID, amount: parseFloat(amount), txid })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    statusDiv.innerHTML = '<span style="color:#44bb44;">✅ ' + data.message + '</span>';
-                    document.getElementById('purchaseAmount').value = '';
-                    document.getElementById('purchaseTxid').value = '';
-                    setTimeout(() => closeModal('purchaseModal'), 3000);
-                } else {
-                    statusDiv.innerHTML = '<span style="color:#ff4444;">❌ ' + data.message + '</span>';
-                }
-            } catch (e) {
-                statusDiv.innerHTML = '<span style="color:#ff4444;">❌ خطأ في الاتصال</span>';
-            }
+    // 6. دالة مشاركة الرابط
+    function shareReferral() {
+        const code = document.getElementById('refCodeDisplay').innerText;
+        const url = `https://t.me/YourBotUsername?start=${code}`; // غير "YourBotUsername" لاسم البوت الفعلي
+        if (navigator.share) {
+            navigator.share({ title: 'انضم إلى Vortex', text: `🚀 انضم إلى مشروع Vortex واحصل على مكافآت! استخدم كود الدعوة: ${code}`, url: url });
+        } else {
+            prompt('انسخ رابط الدعوة:', url);
         }
+    }
 
-        document.getElementById('refreshBtn').addEventListener('click', () => { showToast('جاري التحديث...'); fetchStatus(); });
-        setInterval(fetchStatus, 5000);
-        renderMiningUI();
-        fetchStatus();
-    </script>
-</body>
-</html>
+    // 7. دالة تقديم طلب الشراء (تتصل بالسيرفر)
+    async function submitPurchase() {
+        const usdtInput = document.getElementById('usdtInput');
+        const txidInput = document.getElementById('txidInput');
+        const statusDiv = document.getElementById('purchaseStatus');
+        const amount = parseFloat(usdtInput.value);
+        const txid = txidInput.value.trim();
+
+        if (!amount || amount <= 0) { statusDiv.innerHTML = '<span style="color:#f87171;">⚠️ الرجاء إدخال مبلغ صحيح.</span>'; return; }
+        if (!txid || txid.length < 5) { statusDiv.innerHTML = '<span style="color:#f87171;">⚠️ الرجاء إدخال رقم المعاملة (TXID).</span>'; return; }
+
+        statusDiv.innerHTML = '<span style="color:#f5c842;">⏳ جاري إرسال الطلب...</span>';
+        try {
+            const res = await fetch('/api/purchase', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telegram_id: TELEGRAM_ID, amount, txid })
+            });
+            const data = await res.json();
+            if (data.success) {
+                statusDiv.innerHTML = '<span style="color:#4ade80;">✅ ' + data.message + '</span>';
+                usdtInput.value = '';
+                txidInput.value = '';
+                document.getElementById('vtxOutput').value = '';
+            } else {
+                statusDiv.innerHTML = '<span style="color:#f87171;">❌ ' + data.message + '</span>';
+            }
+        } catch (e) {
+            statusDiv.innerHTML = '<span style="color:#f87171;">❌ خطأ في الاتصال بالسيرفر</span>';
+        }
+    }
+
+    // 8. دالة عرض الإشعارات (Toast)
+    function showToast(msg) {
+        const existing = document.querySelector('.toast-msg');
+        if(existing) existing.remove();
+        const div = document.createElement('div');
+        div.className = 'toast-msg fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white p-3 rounded-xl border border-primary/50 text-sm z-50 backdrop-blur-md';
+        div.innerText = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+    }
+
+    // جلب البيانات الأولية من السيرفر
+    fetchUserStatus();
+    // تحديث دوري كل 10 ثوانٍ
+    setInterval(fetchUserStatus, 10000);
+</script>
+</body></html>
