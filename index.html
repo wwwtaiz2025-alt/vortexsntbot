@@ -30,7 +30,6 @@
             position: relative;
             overflow: hidden;
         }
-        /* تأثير الخلفية الذهبية الدوارة */
         .container::before {
             content: '';
             position: absolute;
@@ -147,7 +146,6 @@
         }
         .click-btn:disabled { opacity: 0.5; transform: translateY(4px); pointer-events: none; }
 
-        /* تأثير العملات المتطايرة (Coin Burst) */
         .coin-burst { position: fixed; pointer-events: none; z-index: 999; }
         .coin {
             position: absolute;
@@ -178,6 +176,7 @@
         }
         .actions button:active { transform: scale(0.95); background: #1f284a; }
         .actions .buy-btn { border-color: #f5c842; color: #f5c842; }
+        .actions .referral-btn { border-color: #44bb44; color: #44bb44; }
 
         .waiting-msg { text-align: center; padding: 20px 10px; color: #8892b0; position: relative; z-index: 1; }
         .waiting-msg .icon { font-size: 48px; display: block; margin-bottom: 12px; }
@@ -191,6 +190,58 @@
             display: none; z-index: 999; max-width: 90%; text-align: center;
             backdrop-filter: blur(10px);
         }
+
+        /* مودال الشراء والإحالة */
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center; align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #161f3a;
+            max-width: 400px;
+            width: 100%;
+            padding: 24px;
+            border-radius: 28px;
+            border: 1px solid #f5c842;
+            color: #fff;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h2 { color: #f5c842; margin-bottom: 16px; }
+        .modal-content input, .modal-content textarea {
+            width: 100%; padding: 12px; margin: 8px 0;
+            border-radius: 12px; border: 1px solid #2f3a66;
+            background: #0d1428; color: #fff;
+        }
+        .modal-content .btn-close {
+            background: #ff4444; color: #fff; border: none;
+            padding: 10px 20px; border-radius: 30px; cursor: pointer;
+            float: right;
+        }
+        .modal-content .btn-submit {
+            background: #f5c842; color: #000; border: none;
+            padding: 12px; border-radius: 30px; cursor: pointer;
+            width: 100%; font-weight: bold;
+        }
+        .wallet-address {
+            background: #0d1428; padding: 12px; border-radius: 12px;
+            font-size: 12px; word-break: break-all;
+            border: 1px dashed #f5c842; margin: 12px 0;
+        }
+        .referral-box {
+            background: #0d1428; padding: 16px; border-radius: 16px;
+            text-align: center; border: 1px solid #44bb44;
+            margin: 12px 0;
+        }
+        .referral-box .code {
+            font-size: 24px; font-weight: bold; color: #f5c842;
+            letter-spacing: 2px;
+        }
+        .referral-box .count { color: #44bb44; }
     </style>
 </head>
 <body>
@@ -212,6 +263,16 @@
 
         <div id="miningArea"></div>
 
+        <!-- قسم الإحالة -->
+        <div class="referral-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span>🏆 كود الإحالة الخاص بك</span>
+                <span class="count">👥 {{REFERRALS_COUNT}} مدعو</span>
+            </div>
+            <div class="code" id="refCodeDisplay">{{REFERRAL_CODE}}</div>
+            <button onclick="copyReferralCode()" style="margin-top:8px;background:#44bb44;color:#000;border:none;padding:6px 16px;border-radius:20px;cursor:pointer;">📋 نسخ الكود</button>
+        </div>
+
         <div class="info-grid">
             <div class="info-item"><div class="val" id="pointsDisplay">{{POINTS}}</div><div class="lbl">⭐ نقاطك</div></div>
             <div class="info-item"><div class="val" id="clicksLeft">{{MAX_CLICKS}}</div><div class="lbl">⚡ الضغطات المتبقية</div></div>
@@ -219,13 +280,34 @@
 
         <div class="actions">
             <button id="boostBtn" class="buy-btn">⚡ شراء هامش</button>
+            <button id="purchaseBtn" class="buy-btn">💎 شراء عملة</button>
             <button id="refreshBtn">🔄 تحديث</button>
         </div>
     </div>
+
+    <!-- مودال الشراء -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close" onclick="closeModal('purchaseModal')">✕</button>
+            <h2>💎 شراء عملة Vortex (USDT)</h2>
+            <p style="font-size:14px;color:#8892b0;">قم بتحويل المبلغ إلى العنوان أدناه عبر شبكة BSC (Smart Chain).</p>
+            <div class="wallet-address">
+                <strong>عنوان المحفظة:</strong><br>
+                <span id="walletAddress">{{USDT_WALLET}}</span>
+            </div>
+            <p style="font-size:12px;color:#8892b0;">📌 بعد التحويل، أدخل رقم المعاملة (TXID) والمبلغ.</p>
+            <input type="number" id="purchaseAmount" placeholder="المبلغ بالـ USDT" min="1" step="0.5">
+            <input type="text" id="purchaseTxid" placeholder="رقم المعاملة (TXID)">
+            <button class="btn-submit" onclick="submitPurchase()">📤 تأكيد الشراء</button>
+            <div id="purchaseStatus" style="margin-top:12px;font-size:14px;"></div>
+        </div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
     <script>
         const TELEGRAM_ID = {{TELEGRAM_ID}};
+        const REFERRAL_CODE = '{{REFERRAL_CODE}}';
         let miningOpen = {{MINING_OPEN}} === 'true';
         let currentPoints = {{POINTS}};
         let maxClicks = {{MAX_CLICKS}};
@@ -246,7 +328,19 @@
             toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3500);
         }
 
-        // دالة تأثير العملات المتطايرة
+        function copyReferralCode() {
+            const code = document.getElementById('refCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('✅ تم نسخ الكود: ' + code);
+            }).catch(() => {
+                showToast('⚠️ الرجاء نسخ الكود يدوياً: ' + code);
+            });
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // دالة تأثير العملات
         function burstCoins(x, y) {
             for (let i = 0; i < 8; i++) {
                 const coin = document.createElement('div');
@@ -334,7 +428,6 @@
             const btn = document.getElementById('clickBtn');
             if (!btn || btn.disabled) return;
 
-            // تأثير العملات المتطايرة عند الضغط
             const rect = btn.getBoundingClientRect();
             burstCoins(rect.left + rect.width/2, rect.top + rect.height/2);
 
@@ -375,6 +468,7 @@
             }, 500);
         }
 
+        // شراء الهامش
         document.getElementById('boostBtn').addEventListener('click', async function() {
             const extra = prompt('كم ضغطة إضافية تريد شراءها؟ (مثلاً 500)');
             if (!extra || isNaN(extra) || parseInt(extra) <= 0) return;
@@ -389,6 +483,44 @@
                 else showToast(data.message, true);
             } catch (e) { showToast('خطأ في الاتصال', true); }
         });
+
+        // شراء العملة (فتح المودال)
+        document.getElementById('purchaseBtn').addEventListener('click', function() {
+            openModal('purchaseModal');
+        });
+
+        // تقديم طلب الشراء
+        async function submitPurchase() {
+            const amount = document.getElementById('purchaseAmount').value;
+            const txid = document.getElementById('purchaseTxid').value;
+            const statusDiv = document.getElementById('purchaseStatus');
+
+            if (!amount || !txid || parseFloat(amount) < 1) {
+                statusDiv.innerHTML = '<span style="color:#ff4444;">⚠️ الرجاء إدخال المبلغ ورقم المعاملة بشكل صحيح.</span>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<span style="color:#f5c842;">⏳ جاري إرسال الطلب...</span>';
+
+            try {
+                const res = await fetch('/api/purchase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegram_id: TELEGRAM_ID, amount: parseFloat(amount), txid })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    statusDiv.innerHTML = '<span style="color:#44bb44;">✅ ' + data.message + '</span>';
+                    document.getElementById('purchaseAmount').value = '';
+                    document.getElementById('purchaseTxid').value = '';
+                    setTimeout(() => closeModal('purchaseModal'), 3000);
+                } else {
+                    statusDiv.innerHTML = '<span style="color:#ff4444;">❌ ' + data.message + '</span>';
+                }
+            } catch (e) {
+                statusDiv.innerHTML = '<span style="color:#ff4444;">❌ خطأ في الاتصال</span>';
+            }
+        }
 
         document.getElementById('refreshBtn').addEventListener('click', () => { showToast('جاري التحديث...'); fetchStatus(); });
         setInterval(fetchStatus, 5000);
