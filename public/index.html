@@ -27,7 +27,6 @@
             border: 1px solid rgba(255, 215, 0, 0.15);
             box-shadow: 0 20px 60px rgba(0,0,0,0.8);
         }
-        /* رأس الصفحة */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-size: 24px; font-weight: 800; color: #f5c842; letter-spacing: 1px; text-shadow: 0 0 20px rgba(245, 200, 66, 0.3); }
         .logo span { color: #fff; font-weight: 300; }
@@ -43,8 +42,6 @@
             gap: 6px;
         }
         .user-badge::before { content: "👤"; font-size: 14px; }
-
-        /* عداد المستخدمين */
         .counter-box {
             background: linear-gradient(145deg, #121a30, #070b14);
             border-radius: 24px;
@@ -80,8 +77,6 @@
             border-radius: 10px;
             transition: width 0.8s ease;
         }
-
-        /* بطاقة التعدين */
         .mine-card {
             background: linear-gradient(145deg, #131d3a, #0c1124);
             border-radius: 28px;
@@ -114,7 +109,6 @@
             border-radius: 10px;
             transition: width 0.4s ease;
         }
-
         .click-btn {
             width: 100%;
             padding: 18px;
@@ -141,7 +135,6 @@
             box-shadow: 0 4px 0 #7a5c10;
             pointer-events: none;
         }
-
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -157,8 +150,6 @@
         }
         .info-item .val { font-size: 18px; font-weight: 700; color: #f5c842; }
         .info-item .lbl { font-size: 11px; color: #6a7aa0; margin-top: 4px; }
-
-        /* أزرار الإجراءات */
         .actions {
             display: flex;
             gap: 10px;
@@ -179,8 +170,6 @@
         }
         .actions button:active { transform: scale(0.95); background: #1f284a; }
         .actions .buy-btn { border-color: #f5c842; color: #f5c842; }
-
-        /* حالة الانتظار */
         .waiting-msg {
             text-align: center;
             padding: 30px 10px;
@@ -188,8 +177,6 @@
         }
         .waiting-msg .icon { font-size: 48px; display: block; margin-bottom: 12px; }
         .waiting-msg h3 { color: #f5c842; margin-bottom: 8px; }
-
-        /* رسالة الخطأ/التنبيه */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -213,50 +200,35 @@
 </head>
 <body>
     <div class="container">
-        <!-- الرأس -->
         <div class="header">
             <div class="logo">VORTEX <span>| VTX</span></div>
             <div class="user-badge" id="usernameDisplay">@{{USERNAME}}</div>
         </div>
-
-        <!-- عداد الـ 20 ألف -->
         <div class="counter-box">
             <div class="label">👥 إجمالي المسجلين</div>
             <div class="number" id="totalUsers">{{TOTAL_USERS}}</div>
             <div class="sub">الهدف: 20,000 مستخدم</div>
             <div class="target-bar"><div class="fill" id="targetFill" style="width: {{PROGRESS}}%;"></div></div>
         </div>
-
-        <!-- منطقة التعدين أو الانتظار -->
-        <div id="miningArea">
-            <!-- سيتم التحكم بها عبر جافا سكريبت -->
-        </div>
-
-        <!-- معلومات إضافية -->
+        <div id="miningArea"></div>
         <div class="info-grid">
             <div class="info-item"><div class="val" id="pointsDisplay">{{POINTS}}</div><div class="lbl">نقاطك</div></div>
             <div class="info-item"><div class="val" id="clicksLeft">{{MAX_CLICKS}}</div><div class="lbl">الضغطات المتبقية</div></div>
         </div>
-
-        <!-- أزرار إضافية -->
         <div class="actions">
             <button id="boostBtn" class="buy-btn">⚡ شراء هامش</button>
             <button id="refreshBtn">🔄 تحديث</button>
         </div>
     </div>
-
-    <!-- رسالة تنبيه -->
     <div id="toast" class="toast"></div>
 
     <script>
-        // --- المتغيرات الأساسية ---
         const TELEGRAM_ID = {{TELEGRAM_ID}};
         let miningOpen = {{MINING_OPEN}} === 'true';
         let currentPoints = {{POINTS}};
         let maxClicks = {{MAX_CLICKS}};
         let clicksUsed = {{CLICKS_USED}};
 
-        // --- عناصر DOM ---
         const miningArea = document.getElementById('miningArea');
         const totalUsersEl = document.getElementById('totalUsers');
         const targetFill = document.getElementById('targetFill');
@@ -264,7 +236,6 @@
         const clicksLeft = document.getElementById('clicksLeft');
         const toast = document.getElementById('toast');
 
-        // --- دالة عرض الرسائل (Toast) ---
         function showToast(msg, isError = false) {
             toast.textContent = msg;
             toast.style.display = 'block';
@@ -273,37 +244,26 @@
             toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3500);
         }
 
-        // --- دالة تحديث الواجهة من السيرفر ---
         async function fetchStatus() {
             try {
                 const res = await fetch(`/api/status?telegram_id=${TELEGRAM_ID}`);
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || 'خطأ');
+                if (!res.ok) throw new Error(data.error || 'خطأ');
                 
-                // تحديث البيانات
                 totalUsersEl.textContent = data.total_users;
-                const progress = Math.min((data.total_users / 20000) * 100, 100);
-                targetFill.style.width = progress + '%';
-
+                targetFill.style.width = Math.min((data.total_users / 20000) * 100, 100) + '%';
                 currentPoints = data.points;
                 maxClicks = data.max_clicks;
                 clicksUsed = data.clicks_used;
                 miningOpen = data.mining_open;
-
                 pointsDisplay.textContent = currentPoints;
                 clicksLeft.textContent = maxClicks - clicksUsed;
-
-                // تحديث واجهة التعدين
                 renderMiningUI();
-                
-                return data;
             } catch (e) {
                 showToast('فشل الاتصال بالسيرفر', true);
-                return null;
             }
         }
 
-        // --- دالة رسم واجهة التعدين ---
         function renderMiningUI() {
             const remaining = maxClicks - clicksUsed;
             const progressClick = Math.min((clicksUsed / maxClicks) * 100, 100);
@@ -347,16 +307,12 @@
                     </div>
                 </div>
             `;
-
-            // إضافة حدث الضغط
             document.getElementById('clickBtn').addEventListener('click', handleClick);
         }
 
-        // --- دالة الضغط على زر التعدين ---
         async function handleClick() {
             const btn = document.getElementById('clickBtn');
             if (!btn || btn.disabled) return;
-
             btn.disabled = true;
             btn.textContent = '⏳ جارٍ...';
 
@@ -367,46 +323,36 @@
                     body: JSON.stringify({ telegram_id: TELEGRAM_ID })
                 });
                 const data = await res.json();
-
                 if (!res.ok) {
-                    if (res.status === 429) {
-                        showToast(`⏳ انتظر ${Math.ceil(data.wait || 3)} ثوانٍ`, true);
-                    } else {
-                        showToast(data.message || 'خطأ', true);
-                    }
+                    if (res.status === 429) showToast(`⏳ انتظر ${Math.ceil(data.wait || 3)} ثوانٍ`, true);
+                    else showToast(data.message || 'خطأ', true);
                     btn.disabled = false;
                     btn.textContent = 'اضغط للتعدين';
                     return;
                 }
-
                 if (data.success) {
-                    // تحديث البيانات محلياً
                     currentPoints = data.new_points;
                     clicksUsed = data.clicks_used;
                     maxClicks = data.max_clicks;
                     pointsDisplay.textContent = currentPoints;
                     clicksLeft.textContent = maxClicks - clicksUsed;
                     showToast('✅ +1 نقطة');
-                    renderMiningUI(); // إعادة رسم الواجهة لتحديث شريط التقدم
+                    renderMiningUI();
                 } else {
                     showToast(data.message, true);
                 }
             } catch (e) {
-                showToast('حدث خطأ في الشبكة', true);
+                showToast('خطأ في الشبكة', true);
             }
-
-            // إعادة تمكين الزر بعد فترة قصيرة (للتأكد)
             setTimeout(() => {
                 const newBtn = document.getElementById('clickBtn');
                 if (newBtn) { newBtn.disabled = false; newBtn.textContent = 'اضغط للتعدين'; }
             }, 500);
         }
 
-        // --- دالة شراء الهامش ---
         document.getElementById('boostBtn').addEventListener('click', async function() {
-            const extra = prompt('كم ضغطة إضافية تريد شراءها؟ (أدخل رقماً، مثلاً 500)');
+            const extra = prompt('كم ضغطة إضافية تريد شراءها؟ (مثلاً 500)');
             if (!extra || isNaN(extra) || parseInt(extra) <= 0) return;
-
             try {
                 const res = await fetch('/api/buy_boost', {
                     method: 'POST',
@@ -414,29 +360,15 @@
                     body: JSON.stringify({ telegram_id: TELEGRAM_ID, extra_clicks: parseInt(extra) })
                 });
                 const data = await res.json();
-                if (data.success) {
-                    showToast(data.message);
-                    fetchStatus(); // تحديث كامل
-                } else {
-                    showToast(data.message, true);
-                }
-            } catch (e) {
-                showToast('خطأ في الاتصال', true);
-            }
+                if (data.success) { showToast(data.message); fetchStatus(); }
+                else showToast(data.message, true);
+            } catch (e) { showToast('خطأ في الاتصال', true); }
         });
 
-        // --- زر التحديث اليدوي ---
-        document.getElementById('refreshBtn').addEventListener('click', function() {
-            showToast('جاري التحديث...');
-            fetchStatus();
-        });
-
-        // --- التحديث التلقائي كل 5 ثوانٍ (للعداد والرصيد) ---
+        document.getElementById('refreshBtn').addEventListener('click', () => { showToast('جاري التحديث...'); fetchStatus(); });
         setInterval(fetchStatus, 5000);
-
-        // --- تشغيل التطبيق ---
         renderMiningUI();
         fetchStatus();
     </script>
 </body>
-              </html>
+</html>
