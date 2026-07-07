@@ -10,7 +10,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// -------------------- التحقق من بيانات تيليجرام --------------------
+// ============================================
+// التحقق من بيانات تيليجرام
+// ============================================
 function verifyTelegramData(initData) {
     try {
         if (!initData) return false;
@@ -26,12 +28,16 @@ function verifyTelegramData(initData) {
     } catch (e) { return false; }
 }
 
-// -------------------- الاتصال بقاعدة البيانات --------------------
+// ============================================
+// الاتصال بقاعدة البيانات
+// ============================================
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ متصل بـ MongoDB'))
   .catch(err => console.error('❌ فشل الاتصال:', err));
 
-// -------------------- نماذج MongoDB --------------------
+// ============================================
+// نماذج MongoDB
+// ============================================
 const CounterSchema = new mongoose.Schema({ _id: String, count: { type: Number, default: 0 } });
 const Counter = mongoose.model('Counter', CounterSchema);
 
@@ -40,13 +46,13 @@ const UserSchema = new mongoose.Schema({
     username: String,
     device_fingerprint: String,
     ip_address: String,
-    points: { type: Number, default: 0 },
+    points: { type: Number, default: 0 },      // يستخدم كرصيد VTX
     max_clicks: { type: Number, default: 1000 },
     clicks_used: { type: Number, default: 0 },
     referral_code: { type: String, unique: true },
     referred_by: { type: Number, default: null },
     referrals_count: { type: Number, default: 0 },
-    role: { type: String, default: 'user' },
+    role: { type: String, default: 'user' },   // 'admin' أو 'user'
     is_banned: { type: Boolean, default: false },
     last_click: Date,
     created_at: { type: Date, default: Date.now }
@@ -65,23 +71,29 @@ const PurchaseSchema = new mongoose.Schema({
     username: String,
     amount: Number,
     txid: String,
-    status: { type: String, default: 'pending' },
+    status: { type: String, default: 'pending' }, // pending, approved, rejected
     created_at: { type: Date, default: Date.now }
 });
 const Purchase = mongoose.model('Purchase', PurchaseSchema);
 
-// -------------------- دوال مساعدة --------------------
+// ============================================
+// دوال مساعدة
+// ============================================
 const generateFingerprint = (ip, ua, id) => {
     return crypto.createHash('sha256').update(`${ip}_${ua}_${id}`).digest('hex');
 };
 
-// -------------------- إعدادات Express --------------------
+// ============================================
+// إعدادات Express
+// ============================================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// -------------------- [1] الصفحة الرئيسية (Mini-App) --------------------
+// ============================================
+// [1] الصفحة الرئيسية (Mini-App)
+// ============================================
 app.get('/app', async (req, res) => {
     try {
         const { initData } = req.query;
@@ -105,7 +117,7 @@ app.get('/app', async (req, res) => {
         const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         const userAgent = req.headers['user-agent'];
 
-        // -------------------- تسجيل المستخدم --------------------
+        // تسجيل المستخدم
         let user = await User.findOne({ telegram_id });
         if (!user) {
             const fingerprint = generateFingerprint(ip, userAgent, telegram_id);
@@ -114,10 +126,9 @@ app.get('/app', async (req, res) => {
                 return res.send('<h1>⚠️ هذا الجهاز مسجل بحساب آخر</h1>');
             }
 
-            // نظام الإحالات
             let referralBonus = 0;
             let referrer = null;
-            const refCode = req.query.startapp || req.query.ref; 
+            const refCode = req.query.startapp || req.query.ref;
             if (refCode) {
                 const referrerUser = await User.findOne({ referral_code: refCode });
                 if (referrerUser) {
@@ -167,12 +178,10 @@ app.get('/app', async (req, res) => {
         const currentPrice = settings?.vtx_price || 0.1387;
         const counter = await Counter.findById('total_users');
         const totalUsers = counter?.count || 0;
-
-        // جلب بيانات الإحالة
         const referralsCount = user.referrals_count || 0;
         const referralCode = user.referral_code || `VTX_${user.telegram_id}`;
 
-        // -------------------- قراءة واجهة HTML وحقن البيانات --------------------
+        // قراءة ملف HTML وحقن البيانات
         const htmlPath = path.join(__dirname, 'index.html');
         let html = fs.readFileSync(htmlPath, 'utf8');
 
@@ -187,6 +196,7 @@ app.get('/app', async (req, res) => {
         html = html.replace(/\{\{REFERRAL_CODE\}\}/g, referralCode);
         html = html.replace(/\{\{REFERRALS_COUNT\}\}/g, referralsCount);
         html = html.replace(/\{\{USDT_WALLET\}\}/g, process.env.USDT_WALLET || '0x...');
+        html = html.replace(/\{\{VTX_PRICE\}\}/g, currentPrice);
 
         res.send(html);
     } catch (error) {
@@ -195,7 +205,9 @@ app.get('/app', async (req, res) => {
     }
 });
 
-// -------------------- [2] API الحالة العامة --------------------
+// ============================================
+// [2] API الحالة العامة
+// ============================================
 app.get('/api/status', async (req, res) => {
     try {
         const { telegram_id } = req.query;
@@ -214,14 +226,17 @@ app.get('/api/status', async (req, res) => {
             progress: Math.min((user.clicks_used / user.max_clicks) * 100, 100),
             referrals_count: user.referrals_count || 0,
             referral_code: user.referral_code,
-            vtx_price: settings?.vtx_price || 0.1387
+            vtx_price: settings?.vtx_price || 0.1387,
+            role: user.role || 'user'
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-// -------------------- [3] API التعدين (الضغط) --------------------
+// ============================================
+// [3] API التعدين (الضغط)
+// ============================================
 const cooldowns = {};
 app.post('/api/click', async (req, res) => {
     try {
@@ -267,22 +282,33 @@ app.post('/api/click', async (req, res) => {
     }
 });
 
-// -------------------- [4] API شراء هامش التعدين --------------------
+// ============================================
+// [4] API شراء هامش التعدين (معززات)
+// ============================================
 app.post('/api/buy_boost', async (req, res) => {
     try {
-        const { telegram_id, extra_clicks } = req.body;
-        if (extra_clicks <= 0 || extra_clicks > 5000) {
-            return res.json({ success: false, message: 'قيمة غير صالحة' });
-        }
+        const { telegram_id, boost_type } = req.body;
         const user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         if (!user) return res.json({ success: false, message: 'غير مسجل' });
 
-        user.max_clicks += parseInt(extra_clicks);
+        const boostMap = {
+            silver: { cost: 10, extra: 500 },
+            gold: { cost: 25, extra: 1500 },
+            titan: { cost: 100, extra: 5000 }
+        };
+
+        const boost = boostMap[boost_type];
+        if (!boost) return res.json({ success: false, message: 'نوع معزز غير صالح' });
+
+        // هنا يمكنك إضافة منطق الخصم من رصيد USDT
+        // حالياً نضيف الضغطات مباشرة
+
+        user.max_clicks += boost.extra;
         await user.save();
 
         res.json({
             success: true,
-            message: `✅ تمت إضافة ${extra_clicks} ضغطة`,
+            message: `✅ تم شراء ${boost_type} بنجاح، تمت إضافة ${boost.extra} ضغطة`,
             new_max: user.max_clicks
         });
     } catch (e) {
@@ -290,7 +316,9 @@ app.post('/api/buy_boost', async (req, res) => {
     }
 });
 
-// -------------------- [5] API طلب شراء USDT (Pre-sale) --------------------
+// ============================================
+// [5] API طلب شراء USDT (Pre-sale)
+// ============================================
 app.post('/api/purchase', async (req, res) => {
     try {
         const { telegram_id, amount, txid } = req.body;
@@ -317,7 +345,10 @@ app.post('/api/purchase', async (req, res) => {
     }
 });
 
-// -------------------- [6] لوحة الإدارة (Admin Panel) --------------------
+// ============================================
+// [6] لوحة الإدارة (Admin Panel)
+// ============================================
+
 // صفحة تسجيل الدخول
 app.get('/admin', (req, res) => {
     const html = `
@@ -441,39 +472,73 @@ app.get('/admin/dashboard', authMiddleware, async (req, res) => {
     }
 });
 
-// تحديث السعر
+// ============================================
+// [7] APIs الإدارة (للـ JSON)
+// ============================================
+
+// بيانات الإدارة (للواجهة الأمامية)
+app.get('/admin/dashboard-data', authMiddleware, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const totalPoints = await User.aggregate([{ $group: { _id: null, total: { $sum: '$points' } } }]);
+        const pendingPurchases = await Purchase.find({ status: 'pending' });
+        const users = await User.find({}, 'telegram_id username points referral_code referrals_count').limit(20);
+
+        res.json({
+            totalUsers,
+            totalPoints: totalPoints[0]?.total || 0,
+            pendingCount: pendingPurchases.length,
+            pendingPurchases: pendingPurchases.map(p => ({
+                _id: p._id,
+                username: p.username,
+                amount: p.amount,
+                txid: p.txid
+            })),
+            users: users.map(u => ({
+                username: u.username,
+                points: u.points
+            }))
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// تحديث السعر (API JSON)
 app.post('/admin/set_price', authMiddleware, async (req, res) => {
     try {
         const { price } = req.body;
-        if (!price || parseFloat(price) <= 0) return res.redirect('/admin/dashboard');
+        if (!price || parseFloat(price) <= 0) return res.json({ success: false, message: 'سعر غير صالح' });
         await Settings.findByIdAndUpdate('main_config', { vtx_price: parseFloat(price) }, { upsert: true });
-        res.redirect('/admin/dashboard');
-    } catch (e) { res.status(500).send('خطأ'); }
+        res.json({ success: true, message: `✅ تم تحديث السعر إلى ${price} USDT` });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
-// تأكيد طلب شراء
+// تأكيد طلب شراء (API JSON)
 app.post('/admin/approve_purchase', authMiddleware, async (req, res) => {
     try {
         const { purchase_id } = req.body;
         const purchase = await Purchase.findById(purchase_id);
-        if (!purchase) return res.redirect('/admin/dashboard');
+        if (!purchase) return res.json({ success: false, message: 'الطلب غير موجود' });
         purchase.status = 'approved';
         await purchase.save();
 
         const pointsToAdd = purchase.amount * 100;
         await User.findOneAndUpdate({ telegram_id: purchase.user_id }, { $inc: { points: pointsToAdd } });
-        res.redirect('/admin/dashboard');
-    } catch (e) { res.status(500).send('خطأ'); }
+        res.json({ success: true, message: '✅ تمت الموافقة' });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// رفض طلب شراء (API JSON)
 app.post('/admin/reject_purchase', authMiddleware, async (req, res) => {
     try {
         const { purchase_id } = req.body;
         await Purchase.findByIdAndUpdate(purchase_id, { status: 'rejected' });
-        res.redirect('/admin/dashboard');
-    } catch (e) { res.status(500).send('خطأ'); }
+        res.json({ success: true, message: '❌ تم الرفض' });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// إرسال إشعار جماعي
 app.post('/admin/broadcast', authMiddleware, async (req, res) => {
     const { message } = req.body;
     console.log(`📨 إشعار جماعي: ${message}`);
@@ -485,12 +550,16 @@ app.get('/admin/logout', (req, res) => {
     res.redirect('/admin');
 });
 
-// -------------------- مسار تجريبي --------------------
+// ============================================
+// مسار تجريبي
+// ============================================
 app.get('/', (req, res) => {
     res.send('🚀 مشروع Vortex يعمل بنجاح!');
 });
 
-// -------------------- تشغيل السيرفر --------------------
+// ============================================
+// تشغيل السيرفر
+// ============================================
 app.listen(PORT, () => {
     console.log(`✅ سيرفر Vortex يعمل على المنفذ ${PORT}`);
 });
