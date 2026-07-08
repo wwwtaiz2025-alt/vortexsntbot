@@ -231,4 +231,564 @@
                 </button>
                 <div class="status-msg" id="miningMessage"></div>
 
-                <div style="margin-top:1.5rem; background:rgba(0,0
+                <div style="margin-top:1.5rem; background:rgba(0,0,0,0.2); border-radius:1.5rem; padding:0.8rem;">
+                    <div style="color:#8a7e6b; font-size:0.8rem;">الأرباح اليومية</div>
+                    <div style="font-size:1.8rem; font-weight:700; color:#f5c842;" id="dailyEarnings">0.0000</div>
+                    <div style="font-size:0.7rem; color:#6a5f4e;">الحد الأقصى: 0.005 USDT</div>
+                </div>
+
+                <button class="btn-secondary" id="harvestBtn" style="width:100%; margin-top:0.8rem;">💰 حصاد الأرباح</button>
+
+                <div style="margin-top:1.5rem; text-align:right;">
+                    <h4 style="color:#f5c842; font-weight:600; font-size:1rem; margin-bottom:0.5rem;">⚡ معززات التعدين</h4>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem 1rem;">
+                            <span style="color:#8a7e6b;">🥈 Silver (+1.5x)</span>
+                            <button class="btn-secondary boost-btn" data-boost="silver" style="padding:0.2rem 0.8rem; font-size:0.8rem;">10 USDT</button>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem 1rem;">
+                            <span style="color:#f5c842;">🥇 Gold (+3.0x)</span>
+                            <button class="btn-secondary boost-btn" data-boost="gold" style="padding:0.2rem 0.8rem; font-size:0.8rem;">25 USDT</button>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem 1rem;">
+                            <span style="color:#e74c3c;">💎 Titan (+8.0x)</span>
+                            <button class="btn-secondary boost-btn" data-boost="titan" style="padding:0.2rem 0.8rem; font-size:0.8rem;">100 USDT</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== تبويب الشراء المسبق ===== -->
+        <div class="tab-panel" id="tab-presale">
+            <div class="glass-card" style="max-width:600px; margin:0 auto; text-align:center;">
+                <h3 style="color:#f5c842; font-weight:600; font-size:1.4rem; margin-bottom:0.5rem;">💎 شراء VTX قبل الإدراج</h3>
+                <p style="color:#8a7e6b; font-size:0.9rem; margin-bottom:1.5rem;">احصل على العملة بسعر المخفض</p>
+                <div style="background:rgba(0,0,0,0.3); border-radius:2rem; padding:0.8rem; margin-bottom:1.5rem; border:1px solid rgba(245,200,66,0.15);">
+                    <div style="font-size:0.8rem; color:#8a7e6b;">سعر VTX الحالي</div>
+                    <div style="font-size:2rem; font-weight:700; color:#f5c842;" id="presalePrice">{{VTX_PRICE}} USDT</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:1rem; text-align:right;">
+                    <div>
+                        <label style="color:#8a7e6b; font-size:0.85rem; display:block; margin-bottom:0.3rem;">🇺🇸 المبلغ (USDT)</label>
+                        <div style="display:flex; align-items:center; background:rgba(0,0,0,0.3); border-radius:3rem; border:1px solid rgba(255,255,255,0.05); padding:0.2rem 0.5rem 0.2rem 1rem;">
+                            <input type="number" id="presaleUsdtInput" placeholder="0.00" step="0.01" min="0.01" style="flex:1; background:transparent; border:none; padding:0.7rem 0.5rem; color:#f0e6d5; font-size:1.2rem; outline:none; width:100%;">
+                            <span style="background:rgba(245,200,66,0.1); padding:0.3rem 1rem; border-radius:2rem; color:#f5c842; font-weight:600; font-size:0.8rem;">USDT</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:center; margin:-0.3rem 0;"><span class="material-symbols-outlined" style="color:#6a5f4e;">swap_vert</span></div>
+                    <div>
+                        <label style="color:#8a7e6b; font-size:0.85rem; display:block; margin-bottom:0.3rem;">🪙 ستحصل على (VTX)</label>
+                        <div style="display:flex; align-items:center; background:rgba(0,0,0,0.3); border-radius:3rem; border:1px solid rgba(245,200,66,0.15); padding:0.2rem 0.5rem 0.2rem 1rem;">
+                            <input type="text" id="presaleVtxOutput" readonly placeholder="0.00" style="flex:1; background:transparent; border:none; padding:0.7rem 0.5rem; color:#f5c842; font-size:1.2rem; font-weight:600; outline:none; width:100%;">
+                            <span style="background:rgba(245,200,66,0.1); padding:0.3rem 1rem; border-radius:2rem; color:#f5c842; font-weight:600; font-size:0.8rem;">VTX</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin:1.5rem 0; background:rgba(0,0,0,0.25); border-radius:1.5rem; padding:1rem; border:1px dashed rgba(245,200,66,0.2);">
+                    <div style="font-size:0.75rem; color:#8a7e6b; margin-bottom:0.3rem;">📤 أرسل USDT إلى العنوان التالي (شبكة BSC):</div>
+                    <code style="background:rgba(0,0,0,0.3); padding:0.4rem 0.8rem; border-radius:2rem; color:#d4af37; font-size:0.7rem; word-break:break-all; display:block; margin-bottom:0.5rem;">{{USDT_WALLET}}</code>
+                    <button class="btn-secondary" id="copyPresaleAddressBtn" style="padding:0.2rem 1rem; font-size:0.8rem;">📋 نسخ</button>
+                </div>
+                <div style="margin-bottom:1rem; text-align:right;">
+                    <label style="color:#8a7e6b; font-size:0.8rem; display:block; margin-bottom:0.3rem;">🔗 رقم المعاملة (TXID):</label>
+                    <input type="text" id="presaleTxidInput" placeholder="أدخل TXID من محفظتك..." style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:3rem; padding:0.7rem 1.2rem; color:#f0e6d5; outline:none; font-size:0.9rem;">
+                </div>
+                <button class="btn-primary" id="presaleConfirmBtn" style="width:100%; padding:0.8rem; font-size:1.1rem;">✅ تأكيد الشراء</button>
+                <div class="status-msg" id="presaleStatus" style="text-align:center;"></div>
+                <div style="margin-top:1.5rem; background:rgba(46,204,113,0.05); border:1px solid rgba(46,204,113,0.15); border-radius:1.5rem; padding:0.8rem; text-align:right;">
+                    <div style="display:flex; align-items:center; gap:0.5rem; justify-content:center;">
+                        <span class="material-symbols-outlined" style="color:#2ecc71;">lock_clock</span>
+                        <span style="font-size:0.75rem; color:#8a7e6b;">سيتم تجميد العملات المشتراة حتى موعد الإدراج الرسمي.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== تبويب المحفظة ===== -->
+        <div class="tab-panel" id="tab-wallet">
+            <div class="glass-card">
+                <h3 style="color:#f5c842; font-weight:300; font-size:1.4rem; margin-bottom:1rem;">💰 المحفظة والأرصدة</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+                    <div style="background:rgba(0,0,0,0.2); border-radius:1.5rem; padding:0.8rem; text-align:center;">
+                        <div style="color:#8a7e6b; font-size:0.7rem;">USDT</div>
+                        <div style="font-size:1.6rem; font-weight:700; color:#f5c842;" id="walletUsdt">0.0000</div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.2); border-radius:1.5rem; padding:0.8rem; text-align:center; border:1px solid rgba(245,200,66,0.15);">
+                        <div style="color:#8a7e6b; font-size:0.7rem;">VTX</div>
+                        <div style="font-size:1.6rem; font-weight:700; color:#f5c842;" id="walletVtx">{{POINTS}}</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:1.2rem;">
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">🔄 تحويل داخلي (بدون عمولة)</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                        <input type="number" id="transferAmount" placeholder="المبلغ" step="0.0001" min="0.0001" style="flex:2; min-width:120px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:3rem; padding:0.6rem 1.2rem; color:#f0e6d5; outline:none;">
+                        <button class="btn-secondary" id="transferToVtx" style="flex:1;">⬅️ USDT → VTX</button>
+                        <button class="btn-secondary" id="transferToUsdt" style="flex:1;">➡️ VTX → USDT</button>
+                    </div>
+                    <div class="status-msg" id="transferStatus"></div>
+                </div>
+                <div style="margin-bottom:1.2rem;">
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">📥 الإيداع اليدوي</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                        <input type="text" id="depositTxId" placeholder="رقم العملية / TxID" style="flex:2; min-width:150px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:3rem; padding:0.6rem 1.2rem; color:#f0e6d5; outline:none;">
+                        <button class="btn-primary" id="depositBtn">تأكيد الإيداع</button>
+                    </div>
+                    <div class="status-msg" id="depositStatus"></div>
+                </div>
+                <div style="margin-bottom:1.2rem;">
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">🏦 السحب (الحد الأدنى 4 USDT)</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                        <input type="text" id="withdrawAddress" placeholder="عنوان المحفظة" style="flex:2; min-width:150px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:3rem; padding:0.6rem 1.2rem; color:#f0e6d5; outline:none;">
+                        <input type="number" id="withdrawAmount" placeholder="المبلغ" step="0.0001" min="4" style="flex:1; min-width:100px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:3rem; padding:0.6rem 1.2rem; color:#f0e6d5; outline:none;">
+                        <button class="btn-secondary" id="withdrawBtn">طلب السحب</button>
+                    </div>
+                    <div class="status-msg" id="withdrawStatus"></div>
+                </div>
+                <div>
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">📜 آخر المعاملات</h4>
+                    <ul id="transactionsList" style="list-style:none; padding:0; max-height:200px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem;">
+                        <li style="color:#6a5f4e; text-align:center;">لا توجد معاملات</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== تبويب الإحالات ===== -->
+        <div class="tab-panel" id="tab-referrals">
+            <div class="glass-card" style="max-width:600px; margin:0 auto; text-align:center;">
+                <h3 style="color:#f5c842; font-weight:600; font-size:1.4rem; margin-bottom:0.5rem;">👥 الإحالات</h3>
+                <div style="font-size:0.9rem; color:#8a7e6b; margin-bottom:0.5rem;">عدد المدعوين</div>
+                <div style="font-size:2.5rem; font-weight:700; color:#f5c842;" id="referralsCount">{{REFERRALS_COUNT}}</div>
+                <div style="margin:1.5rem 0;">
+                    <div style="font-size:0.8rem; color:#8a7e6b; margin-bottom:0.3rem;">🏆 كود الإحالة الخاص بك</div>
+                    <div style="display:flex; align-items:center; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+                        <code style="background:rgba(0,0,0,0.4); padding:0.6rem 1.2rem; border-radius:3rem; border:1px dashed #f5c842; font-size:1.2rem; color:#f5c842; word-break:break-all;">{{REFERRAL_CODE}}</code>
+                        <button class="btn-secondary" id="copyRefCodeBtn" style="padding:0.4rem 1rem;">📋 نسخ</button>
+                    </div>
+                </div>
+                <button class="btn-primary" id="shareReferralBtn" style="width:100%; padding:0.8rem;">📤 مشاركة رابط الدعوة</button>
+                <div style="font-size:0.85rem; color:#6a5f4e; margin-top:0.8rem;">لكل صديق يسجل عبر رابطك، تحصل أنت على <span style="color:#f5c842; font-weight:700;">10 نقاط</span> وهو على <span style="color:#f5c842; font-weight:700;">5 نقاط</span> مجانية.</div>
+                <div style="margin-top:1.5rem;">
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">📋 قائمة المدعوين</h4>
+                    <ul id="referredUsersList" style="list-style:none; padding:0; max-height:150px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem;">
+                        <li style="color:#6a5f4e; text-align:center;">لا يوجد مدعوون بعد</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== تبويب الإدارة ===== -->
+        <div class="tab-panel" id="tab-admin">
+            <div class="glass-card">
+                <h3 style="color:#f5c842; font-weight:600; font-size:1.4rem; margin-bottom:1rem;">⚙️ لوحة الإدارة</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:0.8rem; margin-bottom:1.5rem;">
+                    <div style="background:rgba(0,0,0,0.2); border-radius:1.5rem; padding:0.8rem; text-align:center;">
+                        <div style="color:#8a7e6b; font-size:0.7rem;">👥 المستخدمين</div>
+                        <div style="font-size:1.5rem; font-weight:700; color:#f5c842;" id="adminTotalUsers">0</div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.2); border-radius:1.5rem; padding:0.8rem; text-align:center;">
+                        <div style="color:#8a7e6b; font-size:0.7rem;">⭐ إجمالي النقاط</div>
+                        <div style="font-size:1.5rem; font-weight:700; color:#f5c842;" id="adminTotalPoints">0</div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.2); border-radius:1.5rem; padding:0.8rem; text-align:center; border-color:rgba(245,200,66,0.3);">
+                        <div style="color:#8a7e6b; font-size:0.7rem;">🟡 طلبات الشراء</div>
+                        <div style="font-size:1.5rem; font-weight:700; color:#f5c842;" id="adminPendingPurchases">0</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:1.2rem;">
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">💲 تحديث سعر VTX</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                        <input type="number" id="adminPriceInput" step="0.0001" value="0.1387" style="flex:2; min-width:120px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:3rem; padding:0.6rem 1.2rem; color:#f0e6d5; outline:none;">
+                        <button class="btn-primary" id="adminSetPriceBtn">تحديث السعر</button>
+                    </div>
+                    <div class="status-msg" id="adminPriceStatus"></div>
+                </div>
+                <div style="margin-bottom:1.2rem;">
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">🟡 طلبات شراء USDT المعلقة</h4>
+                    <div id="adminPendingList" style="max-height:200px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem;">
+                        <p style="color:#6a5f4e; text-align:center;">لا توجد طلبات معلقة</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="color:#f5c842; font-weight:600; margin-bottom:0.5rem;">👤 آخر المستخدمين المسجلين</h4>
+                    <div id="adminUsersList" style="max-height:200px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:1rem; padding:0.5rem;">
+                        <p style="color:#6a5f4e; text-align:center;">جاري التحميل...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <nav style="display:flex; justify-content:space-around; align-items:center; padding:0.8rem 1rem; background:rgba(11,20,28,0.9); backdrop-filter:blur(12px); border-top:1px solid rgba(212,175,55,0.1); margin-top:auto;">
+        <button class="tab-btn active" data-tab="mining" style="flex-direction:column; align-items:center; display:flex; gap:0.2rem; background:transparent; border:none; color:#8a7e6b;">
+            <span class="material-symbols-outlined">grid_view</span>
+            <span style="font-size:0.65rem;">التعدين</span>
+        </button>
+        <button class="tab-btn" data-tab="presale" style="flex-direction:column; align-items:center; display:flex; gap:0.2rem; background:transparent; border:none; color:#8a7e6b;">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span style="font-size:0.65rem;">الشراء</span>
+        </button>
+        <button class="tab-btn" data-tab="wallet" style="flex-direction:column; align-items:center; display:flex; gap:0.2rem; background:transparent; border:none; color:#8a7e6b;">
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            <span style="font-size:0.65rem;">المحفظة</span>
+        </button>
+        <button class="tab-btn" data-tab="referrals" style="flex-direction:column; align-items:center; display:flex; gap:0.2rem; background:transparent; border:none; color:#8a7e6b;">
+            <span class="material-symbols-outlined">group</span>
+            <span style="font-size:0.65rem;">الإحالات</span>
+        </button>
+    </nav>
+</div>
+
+<script>
+    // ==========================================
+    // 1. تبديل التبويبات
+    // ==========================================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('tab-' + tab);
+            if (target) target.classList.add('active');
+        });
+    });
+
+    // ==========================================
+    // 2. عرض الإشعارات
+    // ==========================================
+    function showToast(msg, isError = false) {
+        const existing = document.querySelector('.toast-msg');
+        if (existing) existing.remove();
+        const div = document.createElement('div');
+        div.className = 'toast-msg fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-black/80 text-white p-3 rounded-xl border ' + (isError ? 'border-red-500' : 'border-primary/50') + ' text-sm z-50 backdrop-blur-md max-w-xs text-center';
+        div.innerText = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 3500);
+    }
+
+    // ==========================================
+    // 3. جلب الحالة وتحديث الواجهة
+    // ==========================================
+    const TELEGRAM_ID = '{{TELEGRAM_ID}}';
+
+    async function fetchAndUpdate() {
+        try {
+            const res = await fetch('/api/status?telegram_id=' + TELEGRAM_ID, { credentials: 'include' });
+            const data = await res.json();
+            if (data.error) {
+                document.getElementById('miningStatus').innerHTML = '⚠️ ' + data.error;
+                return;
+            }
+
+            document.getElementById('totalUsersDisplay').innerText = data.total_users || 0;
+            document.getElementById('targetProgress').style.width = Math.min((data.total_users / 20000) * 100, 100) + '%';
+            document.getElementById('headerVtxBalance').innerText = data.points || 0;
+            document.getElementById('walletVtx').innerText = data.points || 0;
+            document.getElementById('referralsCount').innerText = data.referrals_count || 0;
+            document.getElementById('headerUsername').innerText = '@' + (data.username || 'زائر');
+
+            const statusEl = document.getElementById('miningStatus');
+            if (data.mining_open) {
+                statusEl.innerHTML = '<span style="color:#2ecc71;">✅ التعدين مفتوح</span>';
+                document.getElementById('mineBtn').disabled = false;
+            } else {
+                statusEl.innerHTML = '<span style="color:#f39c12;">⏳ التعدين سيُفتح عند اكتمال العدد (20,000 مستخدم)</span>';
+                document.getElementById('mineBtn').disabled = true;
+            }
+
+            if (data.vtx_price) {
+                document.getElementById('presalePrice').innerHTML = data.vtx_price + ' USDT';
+            }
+
+            if (data.role === 'admin') {
+                document.getElementById('adminTabBtn').style.display = 'inline-block';
+                loadAdminData();
+            } else {
+                document.getElementById('adminTabBtn').style.display = 'none';
+            }
+        } catch (e) {
+            console.error('فشل التحديث:', e);
+        }
+    }
+
+    // ==========================================
+    // 4. نظام تسجيل الدخول والتسجيل
+    // ==========================================
+    document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.innerText = '';
+        
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('✅ تم تسجيل الدخول بنجاح');
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('headerUsername').innerText = '@' + data.user.username;
+                document.getElementById('headerVtxBalance').innerText = data.user.points || 0;
+                document.getElementById('walletVtx').innerText = data.user.points || 0;
+                await fetchAndUpdate();
+            } else {
+                errorDiv.innerText = '❌ ' + data.message;
+            }
+        } catch (e) { 
+            errorDiv.innerText = '⚠️ خطأ في الاتصال';
+        }
+    });
+
+    document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('signupName').value;
+        const phone = document.getElementById('signupPhone').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const errorDiv = document.getElementById('signupError');
+        errorDiv.innerText = '';
+        
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, email, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('✅ تم إنشاء الحساب بنجاح، سجل دخولك الآن');
+                document.getElementById('tabLogin').checked = true;
+                document.getElementById('signupName').value = '';
+                document.getElementById('signupPhone').value = '';
+                document.getElementById('signupEmail').value = '';
+                document.getElementById('signupPassword').value = '';
+                errorDiv.innerText = '';
+            } else {
+                errorDiv.innerText = '❌ ' + data.message;
+            }
+        } catch (e) { 
+            errorDiv.innerText = '⚠️ خطأ في الاتصال';
+        }
+    });
+
+    // ==========================================
+    // 5. زر التعدين
+    // ==========================================
+    document.getElementById('mineBtn')?.addEventListener('click', async function() {
+        this.disabled = true;
+        this.innerText = '⏳ جارٍ...';
+        try {
+            const res = await fetch('/api/click', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ telegram_id: TELEGRAM_ID })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('✅ +1 نقطة');
+                fetchAndUpdate();
+            } else {
+                showToast(data.message || 'فشل', true);
+            }
+        } catch (e) { showToast('⚠️ خطأ في الاتصال', true); }
+        this.disabled = false;
+        this.innerText = '⛏️ تعدين (يدوي)';
+    });
+
+    // ==========================================
+    // 6. معززات التعدين
+    // ==========================================
+    document.querySelectorAll('.boost-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const boostType = this.dataset.boost;
+            try {
+                const res = await fetch('/api/buy_boost', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ telegram_id: TELEGRAM_ID, boost_type: boostType })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ ' + data.message);
+                    fetchAndUpdate();
+                } else {
+                    showToast(data.message || 'فشل', true);
+                }
+            } catch (e) { showToast('⚠️ خطأ في الاتصال', true); }
+        });
+    });
+
+    // ==========================================
+    // 7. الشراء المسبق
+    // ==========================================
+    document.getElementById('copyPresaleAddressBtn')?.addEventListener('click', function() {
+        const address = document.querySelector('code')?.innerText || '';
+        navigator.clipboard.writeText(address).then(() => showToast('✅ تم نسخ العنوان'));
+    });
+
+    const usdtInput = document.getElementById('presaleUsdtInput');
+    const vtxOutput = document.getElementById('presaleVtxOutput');
+    usdtInput?.addEventListener('input', function() {
+        const usdt = parseFloat(this.value);
+        const price = parseFloat(document.getElementById('presalePrice').innerText);
+        if (!isNaN(usdt) && usdt > 0 && !isNaN(price) && price > 0) {
+            vtxOutput.value = (usdt / price).toFixed(2);
+        } else {
+            vtxOutput.value = '';
+        }
+    });
+
+    document.getElementById('presaleConfirmBtn')?.addEventListener('click', async function() {
+        const amount = parseFloat(usdtInput?.value);
+        const txid = document.getElementById('presaleTxidInput')?.value.trim();
+        const statusDiv = document.getElementById('presaleStatus');
+        if (!amount || amount <= 0) { statusDiv.innerHTML = '<span style="color:#e74c3c;">⚠️ أدخل مبلغاً صحيحاً.</span>'; return; }
+        if (!txid || txid.length < 5) { statusDiv.innerHTML = '<span style="color:#e74c3c;">⚠️ أدخل رقم المعاملة (TXID).</span>'; return; }
+        statusDiv.innerHTML = '<span style="color:#f5c842;">⏳ جاري إرسال الطلب...</span>';
+        this.disabled = true;
+        try {
+            const res = await fetch('/api/purchase', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ telegram_id: TELEGRAM_ID, amount, txid })
+            });
+            const data = await res.json();
+            if (data.success) {
+                statusDiv.innerHTML = '<span style="color:#2ecc71;">✅ ' + data.message + '</span>';
+                usdtInput.value = '';
+                document.getElementById('presaleTxidInput').value = '';
+                vtxOutput.value = '';
+            } else {
+                statusDiv.innerHTML = '<span style="color:#e74c3c;">❌ ' + data.message + '</span>';
+            }
+        } catch (e) { statusDiv.innerHTML = '<span style="color:#e74c3c;">❌ خطأ في الاتصال</span>'; }
+        this.disabled = false;
+    });
+
+    // ==========================================
+    // 8. الإحالات
+    // ==========================================
+    document.getElementById('copyRefCodeBtn')?.addEventListener('click', function() {
+        const code = document.querySelector('#tab-referrals code')?.innerText || '';
+        navigator.clipboard.writeText(code).then(() => showToast('✅ تم نسخ الكود'));
+    });
+
+    document.getElementById('shareReferralBtn')?.addEventListener('click', function() {
+        const code = document.querySelector('#tab-referrals code')?.innerText || '';
+        const url = `https://t.me/YourBotUsername?start=${code}`;
+        if (navigator.share) {
+            navigator.share({ title: 'انضم إلى Vortex', text: `🚀 استخدم كود الدعوة: ${code}`, url });
+        } else {
+            prompt('انسخ رابط الدعوة:', url);
+        }
+    });
+
+    // ==========================================
+    // 9. الإدارة
+    // ==========================================
+    async function loadAdminData() {
+        try {
+            const res = await fetch('/admin/dashboard-data', { credentials: 'include' });
+            const data = await res.json();
+            if (!data.error) {
+                document.getElementById('adminTotalUsers').innerText = data.totalUsers || 0;
+                document.getElementById('adminTotalPoints').innerText = data.totalPoints || 0;
+                document.getElementById('adminPendingPurchases').innerText = data.pendingCount || 0;
+
+                const usersList = document.getElementById('adminUsersList');
+                if (data.users && data.users.length) {
+                    usersList.innerHTML = data.users.map(u => 
+                        `<div style="display:flex; justify-content:space-between; padding:0.3rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem;">
+                            <span>${u.username}</span>
+                            <span style="color:#f5c842;">${u.points} VTX</span>
+                        </div>`
+                    ).join('');
+                } else {
+                    usersList.innerHTML = '<p style="color:#6a5f4e; text-align:center;">لا يوجد مستخدمون</p>';
+                }
+
+                const pendingList = document.getElementById('adminPendingList');
+                if (data.pendingPurchases && data.pendingPurchases.length) {
+                    pendingList.innerHTML = data.pendingPurchases.map(p => 
+                        `<div style="display:flex; justify-content:space-between; padding:0.3rem 0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.8rem; align-items:center;">
+                            <span>${p.username} - ${p.amount} USDT</span>
+                            <span>
+                                <button onclick="approvePurchase('${p._id}')" style="background:#2ecc71; border:none; color:#000; padding:0.1rem 0.8rem; border-radius:2rem; cursor:pointer; font-size:0.7rem;">✅</button>
+                                <button onclick="rejectPurchase('${p._id}')" style="background:#e74c3c; border:none; color:#fff; padding:0.1rem 0.8rem; border-radius:2rem; cursor:pointer; font-size:0.7rem;">❌</button>
+                            </span>
+                        </div>`
+                    ).join('');
+                } else {
+                    pendingList.innerHTML = '<p style="color:#6a5f4e; text-align:center;">لا توجد طلبات معلقة</p>';
+                }
+            }
+        } catch (e) { /* تجاهل */ }
+    }
+
+    document.getElementById('adminSetPriceBtn')?.addEventListener('click', async function() {
+        const price = parseFloat(document.getElementById('adminPriceInput').value);
+        if (!price || price <= 0) return showToast('⚠️ أدخل سعراً صحيحاً', true);
+        try {
+            const res = await fetch('/admin/set_price', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ price })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('✅ تم تحديث السعر إلى ' + price);
+                document.getElementById('presalePrice').innerHTML = price + ' USDT';
+            } else {
+                showToast('❌ ' + data.message, true);
+            }
+        } catch (e) { showToast('⚠️ خطأ في الاتصال', true); }
+    });
+
+    window.approvePurchase = async (id) => {
+        try {
+            await fetch('/admin/approve_purchase', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                credentials: 'include',
+                body: JSON.stringify({ purchase_id: id }) 
+            });
+            showToast('✅ تمت الموافقة');
+            loadAdminData();
+        } catch (e) { showToast('⚠️ خطأ', true); }
+    };
+
+    window.rejectPurchase = async (id) => {
+        try {
+            await fetch('/admin/reject_purchase', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                credentials: 'include',
+                body: JSON.stringify({ purchase_id: id }) 
+            });
+            showToast('❌ تم الرفض');
+            loadAdminData();
+        } catch (e) { showToast('⚠️ خطأ', true); }
+    };
+
+    document.querySelector('[data-tab="admin"]')?.addEventListener('click', loadAdminData);
+
+    // ==========================================
+    // 10. التحديث التلقائي
+    // ==========================================
+    fetchAndUpdate();
+    setInterval(fetchAndUpdate, 15000);
+</script>
+</body>
+    </html>
