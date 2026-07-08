@@ -30,26 +30,36 @@ if (!fs.existsSync('uploads')) {
 }
 
 // ==============================
-// 2. الاتصال بقاعدة البيانات
+// 2. التحقق من وجود index.html ⭐ جديد
+// ==============================
+const indexPath = path.join(__dirname, 'index.html');
+if (!fs.existsSync(indexPath)) {
+    console.error('❌ ملف index.html غير موجود في المسار:', indexPath);
+    console.error('⚠️ تأكد من رفع الملف إلى المستودع بنفس الاسم');
+    process.exit(1);
+} else {
+    console.log('✅ تم العثور على index.html');
+}
+
+// ==============================
+// 3. الاتصال بقاعدة البيانات
 // ==============================
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
 .then(() => console.log('✅ متصل بـ MongoDB'))
-.catch(err => console.error('❌ فشل الاتصال:', err.message));
+.catch(err => {
+    console.error('❌ فشل الاتصال بقاعدة البيانات:', err.message);
+    console.error('⚠️ تأكد من متغير MONGO_URI في البيئة');
+    process.exit(1);
+});
 
 // ==============================
-// 3. نماذج قاعدة البيانات (معدلة)
+// 4. نماذج قاعدة البيانات
 // ==============================
-
 const UserSchema = new mongoose.Schema({
-    telegram_id: { 
-        type: Number, 
-        unique: false,          // ✅ تم إزالة unique
-        sparse: true, 
-        default: null 
-    },
+    telegram_id: { type: Number, unique: false, sparse: true, default: null },
     username: { type: String, default: 'مستخدم' },
     email: { type: String, unique: true, sparse: true },
     password: { type: String },
@@ -125,7 +135,7 @@ const Settings = mongoose.model('Settings', SettingsSchema);
 const ReferralEarning = mongoose.model('ReferralEarning', ReferralEarningSchema);
 
 // ==============================
-// 4. دوال مساعدة
+// 5. دوال مساعدة
 // ==============================
 
 function generateReferralCode() {
@@ -149,7 +159,7 @@ async function getUserFromRequest(req) {
 }
 
 // ==============================
-// 5. إنشاء الإعدادات الافتراضية
+// 6. إنشاء الإعدادات الافتراضية
 // ==============================
 async function initSettings() {
     const settings = await Settings.findById('main_config');
@@ -162,35 +172,27 @@ async function initSettings() {
 initSettings();
 
 // ==============================
-// 6. API المصادقة (Authentication)
+// 7. API المصادقة
 // ==============================
-
-// 6.1 تسجيل مستخدم جديد
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, email, password, captcha_answer, captcha_expected, referral_code } = req.body;
 
-        // 1. التحقق من الكابتشا
         if (!verifyCaptcha(captcha_answer, captcha_expected)) {
             return res.json({ success: false, message: '❌ إجابة الكابتشا غير صحيحة' });
         }
 
-        // 2. التحقق من وجود البريد
         const existing = await User.findOne({ email });
         if (existing) {
             return res.json({ success: false, message: '❌ البريد الإلكتروني مسجل مسبقاً' });
         }
 
-        // 3. تشفير كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 4. توليد كود إحالة فريد
         let refCode = generateReferralCode();
         while (await User.findOne({ referral_code: refCode })) {
             refCode = generateReferralCode();
         }
 
-        // 5. معالجة الإحالة
         let referredBy = null;
         if (referral_code) {
             const referrer = await User.findOne({ referral_code });
@@ -199,7 +201,6 @@ app.post('/api/auth/register', async (req, res) => {
             }
         }
 
-        // 6. إنشاء المستخدم (مع telegram_id = null)
         const user = new User({
             username: username || email.split('@')[0],
             email,
@@ -208,16 +209,14 @@ app.post('/api/auth/register', async (req, res) => {
             referred_by: referredBy,
             captcha_passed: true,
             role: 'user',
-            telegram_id: null  // ✅ صريحاً null
+            telegram_id: null
         });
         await user.save();
 
-        // 7. تحديث عداد المستخدمين
         await Settings.findByIdAndUpdate('main_config', {
             $inc: { mining_current_seats: 1 }
         }, { upsert: true });
 
-        // 8. إنشاء التوكن
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET || 'vortex-secret-key',
@@ -243,7 +242,6 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// 6.2 تسجيل الدخول
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -287,13 +285,11 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// 6.3 تسجيل الخروج
 app.post('/api/auth/logout', (req, res) => {
     res.clearCookie('token');
     res.json({ success: true, message: 'تم تسجيل الخروج' });
 });
 
-// 6.4 التحقق من حالة المستخدم
 app.get('/api/auth/me', async (req, res) => {
     try {
         const user = await getUserFromRequest(req);
@@ -317,9 +313,8 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // ==============================
-// 7. نظام التعدين
+// 8. نظام التعدين
 // ==============================
-
 app.get('/api/mining/status', async (req, res) => {
     try {
         const user = await getUserFromRequest(req);
@@ -398,7 +393,7 @@ app.post('/api/mining/start', async (req, res) => {
 });
 
 // ==============================
-// 8. الشراء المسبق
+// 9. الشراء المسبق
 // ==============================
 
 const upload = multer({
@@ -475,9 +470,8 @@ app.get('/api/purchase/history', async (req, res) => {
 });
 
 // ==============================
-// 9. المهام
+// 10. المهام
 // ==============================
-
 app.get('/api/tasks', async (req, res) => {
     try {
         const tasks = await Task.find({ is_active: true });
@@ -488,9 +482,8 @@ app.get('/api/tasks', async (req, res) => {
 });
 
 // ==============================
-// 10. الإحالات
+// 11. الإحالات
 // ==============================
-
 app.get('/api/referrals', async (req, res) => {
     try {
         const user = await getUserFromRequest(req);
@@ -519,9 +512,8 @@ app.get('/api/referrals', async (req, res) => {
 });
 
 // ==============================
-// 11. لوحة الإدارة
+// 12. لوحة الإدارة
 // ==============================
-
 app.get('/admin/stats', async (req, res) => {
     try {
         const admin = await getUserFromRequest(req);
@@ -665,15 +657,19 @@ app.post('/admin/broadcast', async (req, res) => {
 });
 
 // ==============================
-// 12. الصفحة الرئيسية (Mini-App)
+// 13. الصفحة الرئيسية (Mini-App)
 // ==============================
 app.get('/app', async (req, res) => {
     try {
         const user = await getUserFromRequest(req);
         const settings = await Settings.findById('main_config');
 
-        const htmlPath = path.join(__dirname, 'index.html');
-        let html = fs.readFileSync(htmlPath, 'utf8');
+        // التحقق من وجود الملف قبل القراءة
+        if (!fs.existsSync(indexPath)) {
+            return res.status(500).send('❌ ملف index.html غير موجود');
+        }
+
+        let html = fs.readFileSync(indexPath, 'utf8');
 
         const userData = user ? {
             id: user._id,
@@ -704,14 +700,14 @@ app.get('/app', async (req, res) => {
 });
 
 // ==============================
-// 13. المسار الرئيسي
+// 14. المسار الرئيسي
 // ==============================
 app.get('/', (req, res) => {
     res.send('🚀 مشروع Vortex يعمل بنجاح!');
 });
 
 // ==============================
-// 14. تشغيل السيرفر
+// 15. تشغيل السيرفر
 // ==============================
 app.listen(PORT, () => {
     console.log(`✅ سيرفر Vortex يعمل على المنفذ ${PORT}`);
