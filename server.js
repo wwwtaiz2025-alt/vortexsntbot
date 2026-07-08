@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema({
     telegram_id: { type: Number, unique: true, sparse: true },
     username: String,
     email: { type: String, unique: true, sparse: true },
-    password: String, // سيتم تخزينها بشكل مشفر لاحقاً (نتركها حالياً)
+    password: String,
     device_fingerprint: String,
     ip_address: String,
     points: { type: Number, default: 0 },
@@ -88,80 +88,80 @@ const generateFingerprint = (ip, ua, id) => {
 // ==========================================
 // 5. إعدادات Express
 // ==========================================
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ==========================================
-// 6. API المصادقة (تسجيل الدخول والتسجيل)
+// 6. جلب المستخدم من الجلسة
 // ==========================================
+async function getUserFromSession(req) {
+    const sessionId = req.cookies?.user_session;
+    if (sessionId) {
+        const user = await User.findById(sessionId);
+        if (user) return user;
+    }
+    return null;
+}
 
-// تسجيل مستخدم جديد (بالبريد الإلكتروني)
+// ==========================================
+// 7. API المصادقة
+// ==========================================
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { name, phone, email, password } = req.body;
         if (!email || !password) {
             return res.json({ success: false, message: 'البريد الإلكتروني وكلمة المرور مطلوبة' });
         }
-
         const existing = await User.findOne({ email });
         if (existing) {
             return res.json({ success: false, message: 'البريد الإلكتروني مسجل مسبقاً' });
         }
-
-        // إنشاء مستخدم جديد (بدون telegram_id)
         const referral_code = `VTX_${Date.now()}_${Math.floor(Math.random()*1000)}`;
         const user = new User({
             username: name || email.split('@')[0],
             email: email,
-            password: password, // في الإنتاج يجب تشفيرها بـ bcrypt
+            password: password,
             referral_code: referral_code,
             points: 0,
             role: 'user'
         });
         await user.save();
-
-        // تحديث عداد المستخدمين
-        await Counter.findByIdAndUpdate(
-            'total_users',
-            { $inc: { count: 1 } },
-            { upsert: true }
-        );
-
+        await Counter.findByIdAndUpdate('total_users', { $inc: { count: 1 } }, { upsert: true });
         res.json({ success: true, message: '✅ تم إنشاء الحساب بنجاح', user: { email: user.email, username: user.username } });
     } catch (e) {
         res.status(500).json({ success: false, message: e.message });
     }
 });
 
-// تسجيل الدخول
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
             return res.json({ success: false, message: 'البريد الإلكتروني وكلمة المرور مطلوبة' });
         }
-
         const user = await User.findOne({ email });
         if (!user) {
             return res.json({ success: false, message: 'البريد الإلكتروني غير مسجل' });
         }
-
         if (user.password !== password) {
             return res.json({ success: false, message: 'كلمة المرور غير صحيحة' });
         }
-
-        // تحديث الكوكي أو الجلسة (مؤقتاً نرسل البيانات)
-        res.cookie('user_session', user._id.toString(), { maxAge: 7*24*60*60*1000, httpOnly: true });
+        res.cookie('user_session', user._id.toString(), { maxAge: 7*24*60*60*1000, httpOnly: true, sameSite: 'lax' });
         res.json({ success: true, message: '✅ تم تسجيل الدخول', user: { email: user.email, username: user.username, points: user.points } });
     } catch (e) {
         res.status(500).json({ success: false, message: e.message });
     }
 });
 
+app.post('/api/auth/logout', (req, res) => {
+    res.clearCookie('user_session');
+    res.json({ success: true, message: 'تم تسجيل الخروج' });
+});
+
 // ==========================================
-// 7. الصفحة الرئيسية (Mini-App)
+// 8. الصفحة الرئيسية
 // ==========================================
 app.get('/app', async (req, res) => {
     try {
@@ -169,7 +169,6 @@ app.get('/app', async (req, res) => {
         let telegram_id = null;
         let username = 'زائر';
 
-        // محاولة استخراج بيانات تيليجرام
         if (initData && verifyTelegramData(initData)) {
             try {
                 const urlParams = new URLSearchParams(initData);
@@ -190,46 +189,35 @@ app.get('/app', async (req, res) => {
 
         let user = null;
 
-        // إذا كان هناك telegram_id، نحاول جلب المستخدم أو إنشاؤه
-        if (telegram_id) {
-            user = await User.findOne({ telegram_id });
-            if (!user) {
-                const fingerprint = generateFingerprint(ip, userAgent, telegram_id);
-                const existing = await User.findOne({ device_fingerprint: fingerprint });
-                if (!existing) {
-                    const referral_code = `VTX_${telegram_id}`;
-                    user = new User({
-                        telegram_id,
-                        username,
-                        device_fingerprint: fingerprint,
-                        ip_address: ip,
-                        referral_code: referral_code,
-                        points: 0,
-                        role: 'user'
-                    });
-                    await user.save();
-
-                    await Counter.findByIdAndUpdate(
-                        'total_users',
-                        { $inc: { count: 1 } },
-                        { upsert: true }
-                    );
-                } else {
-                    // جهاز مسجل بحساب آخر
-                    return res.send('<h1>⚠️ هذا الجهاز مسجل بحساب آخر</h1>');
-                }
-            }
+        if (telegram_id && telegram_id !== 'null') {
+            user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         }
 
-        // إذا لم يكن هناك telegram_id، نستخدم بيانات الجلسة (إن وجدت)
         if (!user) {
-            const sessionId = req.cookies?.user_session;
-            if (sessionId) {
-                user = await User.findById(sessionId);
+            user = await getUserFromSession(req);
+        }
+
+        if (telegram_id && telegram_id !== 'null' && !user) {
+            const fingerprint = generateFingerprint(ip, userAgent, telegram_id);
+            const existing = await User.findOne({ device_fingerprint: fingerprint });
+            if (!existing) {
+                const referral_code = `VTX_${telegram_id}`;
+                user = new User({
+                    telegram_id: parseInt(telegram_id),
+                    username: username,
+                    device_fingerprint: fingerprint,
+                    ip_address: ip,
+                    referral_code: referral_code,
+                    points: 0,
+                    role: 'user'
+                });
+                await user.save();
+                await Counter.findByIdAndUpdate('total_users', { $inc: { count: 1 } }, { upsert: true });
+            } else {
+                return res.send('<h1>⚠️ هذا الجهاز مسجل بحساب آخر</h1>');
             }
         }
 
-        // إذا لم يكن هناك مستخدم نهائياً، ننشئ مستخدماً وهمياً للعرض (لكن لن نتمكن من التعدين)
         if (!user) {
             user = {
                 telegram_id: null,
@@ -250,11 +238,9 @@ app.get('/app', async (req, res) => {
         const counter = await Counter.findById('total_users');
         const totalUsers = counter?.count || 0;
 
-        // قراءة ملف HTML وحقن البيانات
         const htmlPath = path.join(__dirname, 'index.html');
         let html = fs.readFileSync(htmlPath, 'utf8');
 
-        // استبدال جميع المتغيرات
         html = html.replace(/\{\{TELEGRAM_ID\}\}/g, user.telegram_id || 'null');
         html = html.replace(/\{\{USERNAME\}\}/g, user.username || 'زائر');
         html = html.replace(/\{\{POINTS\}\}/g, user.points || 0);
@@ -277,7 +263,7 @@ app.get('/app', async (req, res) => {
 });
 
 // ==========================================
-// 8. API الحالة العامة
+// 9. API الحالة العامة
 // ==========================================
 app.get('/api/status', async (req, res) => {
     try {
@@ -287,11 +273,7 @@ app.get('/api/status', async (req, res) => {
             user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         }
         if (!user) {
-            // محاولة جلب المستخدم من الجلسة
-            const sessionId = req.cookies?.user_session;
-            if (sessionId) {
-                user = await User.findById(sessionId);
-            }
+            user = await getUserFromSession(req);
         }
         if (!user) {
             return res.status(404).json({ error: 'غير مسجل' });
@@ -310,7 +292,8 @@ app.get('/api/status', async (req, res) => {
             referrals_count: user.referrals_count || 0,
             referral_code: user.referral_code || 'غير متاح',
             vtx_price: settings?.vtx_price || 0.1387,
-            role: user.role || 'user'
+            role: user.role || 'user',
+            username: user.username || 'زائر'
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -318,7 +301,7 @@ app.get('/api/status', async (req, res) => {
 });
 
 // ==========================================
-// 9. API التعدين (الضغط)
+// 10. API التعدين
 // ==========================================
 const cooldowns = {};
 app.post('/api/click', async (req, res) => {
@@ -329,10 +312,7 @@ app.post('/api/click', async (req, res) => {
             user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         }
         if (!user) {
-            const sessionId = req.cookies?.user_session;
-            if (sessionId) {
-                user = await User.findById(sessionId);
-            }
+            user = await getUserFromSession(req);
         }
         if (!user) return res.json({ success: false, message: 'غير مسجل' });
         if (user.is_banned) return res.json({ success: false, message: 'محظور' });
@@ -375,7 +355,7 @@ app.post('/api/click', async (req, res) => {
 });
 
 // ==========================================
-// 10. API شراء هامش التعدين (معززات)
+// 11. API شراء المعززات
 // ==========================================
 app.post('/api/buy_boost', async (req, res) => {
     try {
@@ -385,10 +365,7 @@ app.post('/api/buy_boost', async (req, res) => {
             user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         }
         if (!user) {
-            const sessionId = req.cookies?.user_session;
-            if (sessionId) {
-                user = await User.findById(sessionId);
-            }
+            user = await getUserFromSession(req);
         }
         if (!user) return res.json({ success: false, message: 'غير مسجل' });
 
@@ -415,7 +392,7 @@ app.post('/api/buy_boost', async (req, res) => {
 });
 
 // ==========================================
-// 11. API طلب شراء USDT (Pre-sale)
+// 12. API طلب شراء USDT (Pre-sale)
 // ==========================================
 app.post('/api/purchase', async (req, res) => {
     try {
@@ -427,10 +404,7 @@ app.post('/api/purchase', async (req, res) => {
             user = await User.findOne({ telegram_id: parseInt(telegram_id) });
         }
         if (!user) {
-            const sessionId = req.cookies?.user_session;
-            if (sessionId) {
-                user = await User.findById(sessionId);
-            }
+            user = await getUserFromSession(req);
         }
         if (!user) return res.json({ success: false, message: 'غير مسجل' });
 
@@ -453,7 +427,7 @@ app.post('/api/purchase', async (req, res) => {
 });
 
 // ==========================================
-// 12. لوحة الإدارة (Admin Panel)
+// 13. لوحة الإدارة (Admin)
 // ==========================================
 app.get('/admin', (req, res) => {
     const html = `
@@ -606,14 +580,14 @@ app.get('/admin/logout', (req, res) => {
 });
 
 // ==========================================
-// 13. مسار تجريبي
+// 14. مسار تجريبي
 // ==========================================
 app.get('/', (req, res) => {
     res.send('🚀 مشروع Vortex يعمل بنجاح!');
 });
 
 // ==========================================
-// 14. تشغيل السيرفر
+// 15. تشغيل السيرفر
 // ==========================================
 app.listen(PORT, () => {
     console.log(`✅ سيرفر Vortex يعمل على المنفذ ${PORT}`);
