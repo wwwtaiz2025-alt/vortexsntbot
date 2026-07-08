@@ -1,7 +1,7 @@
 {
   "name": "vortex-bot",
   "version": "1.0.0",
-  "description": "Vortex VTX Mining Bot with Pre-sale & Admin Panel",
+  "description": "Vortex (VRT) Full-Stack Telegram Mini App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -11,6 +11,12 @@
     "mongoose": "^7.5.0",
     "dotenv": "^16.3.1",
     "cors": "^2.8.5",
-    "cookie-parser": "^1.4.6"
+    "cookie-parser": "^1.4.6",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "axios": "^1.5.0",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.1"
   }
 }
