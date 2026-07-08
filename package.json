@@ -1,7 +1,7 @@
 {
   "name": "vortex-bot",
   "version": "1.0.0",
-  "description": "Vortex VTX Mining Bot with Pre-sale",
+  "description": "Vortex VTX Mining Bot with Pre-sale & Admin Panel",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
