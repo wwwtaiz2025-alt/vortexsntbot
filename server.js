@@ -30,7 +30,7 @@ if (!fs.existsSync('uploads')) {
 }
 
 // ==============================
-// 2. التحقق من وجود index.html ⭐ جديد
+// 2. التحقق من وجود index.html
 // ==============================
 const indexPath = path.join(__dirname, 'index.html');
 if (!fs.existsSync(indexPath)) {
@@ -512,6 +512,33 @@ app.get('/api/referrals', async (req, res) => {
 });
 
 // ==============================
+// 11.5. الإعلانات (Ads) ⭐ NEW
+// ==============================
+app.post('/api/ads/watch', async (req, res) => {
+    try {
+        const user = await getUserFromRequest(req);
+        if (!user) return res.status(401).json({ success: false, message: 'غير مسجل' });
+
+        const { adsWatched } = req.body;
+        const earned = Math.floor(adsWatched / 10);
+
+        if (earned > 0) {
+            user.balance_vrt = (user.balance_vrt || 0) + earned;
+            await user.save();
+        }
+
+        res.json({
+            success: true,
+            message: '✅ تم مشاهدة الإعلان',
+            earned: earned,
+            balance_vrt: user.balance_vrt
+        });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ==============================
 // 12. لوحة الإدارة
 // ==============================
 app.get('/admin/stats', async (req, res) => {
@@ -664,7 +691,6 @@ app.get('/app', async (req, res) => {
         const user = await getUserFromRequest(req);
         const settings = await Settings.findById('main_config');
 
-        // التحقق من وجود الملف قبل القراءة
         if (!fs.existsSync(indexPath)) {
             return res.status(500).send('❌ ملف index.html غير موجود');
         }
