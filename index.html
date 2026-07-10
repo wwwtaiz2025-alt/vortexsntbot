@@ -140,9 +140,6 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #131313; }
         ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
-        .chart-bars { display: flex; align-items: flex-end; gap: 0.3rem; height: 80px; margin: 0.5rem 0; }
-        .chart-bar { flex: 1; background: rgba(212,175,55,0.2); border-radius: 4px 4px 0 0; min-height: 8px; transition: height 0.5s; }
-        .chart-bar.active { background: #f5c842; box-shadow: 0 0 10px rgba(245,200,66,0.3); }
         .status-badge { padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
         .badge-pending { background: #f5a623; color: #000; }
         .badge-approved { background: #2ecc71; color: #fff; }
@@ -205,6 +202,15 @@
             font-family: 'Montserrat', sans-serif;
             animation: coinPulse 3s ease-in-out infinite;
         }
+        .price-up { color: #2ecc71; }
+        .price-down { color: #ff6b6b; }
+        .price-flash {
+            animation: priceFlash 0.5s ease;
+        }
+        @keyframes priceFlash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
         @media (max-width: 640px) {
             .glass-panel { padding: 1rem; }
             .tab-btn { font-size: 0.7rem; padding: 0.3rem 0.5rem; }
@@ -258,7 +264,6 @@
 <!-- ===== TOP APP BAR ===== -->
 <header class="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl border-b border-white/10 shadow-[0px_10px_30px_rgba(255,215,0,0.05)] flex justify-between items-center px-4 py-3">
     <div class="flex items-center gap-3">
-        <!-- صورة العملة الواقعية -->
         <div class="real-coin">VRT</div>
         <h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter" style="font-family:'Montserrat',sans-serif; font-size:1.5rem;">VORTEX</h1>
     </div>
@@ -278,12 +283,16 @@
         <button class="tab-btn active" data-tab="mining">⛏️ التعدين</button>
         <button class="tab-btn" data-tab="presale">💎 الشراء</button>
         <button class="tab-btn" data-tab="tasks">📋 المهام</button>
+        <button class="tab-btn" data-tab="ads">📺 الإعلانات</button>
+        <button class="tab-btn" data-tab="wallet">💰 المحفظة</button>
         <button class="tab-btn" data-tab="referrals">👥 الإحالات</button>
         <button class="tab-btn" data-tab="settings">⚙️ الإعدادات</button>
         <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none;">🔐 الإدارة</button>
     </div>
 
+    <!-- ================================ -->
     <!-- ===== 1. التعدين ===== -->
+    <!-- ================================ -->
     <div class="tab-panel active" id="tab-mining">
         <div class="glass-panel text-center">
             <div class="flex justify-center mb-4">
@@ -317,13 +326,15 @@
         </div>
     </div>
 
-    <!-- ===== 2. الشراء المسبق مع بيانات السوق ===== -->
+    <!-- ================================ -->
+    <!-- ===== 2. الشراء المسبق مع سعر متحرك ===== -->
+    <!-- ================================ -->
     <div class="tab-panel" id="tab-presale">
         <div class="glass-panel">
             <h2 class="text-primary font-bold text-xl mb-2 text-center">💎 شراء العملة قبل إدراجها</h2>
             <p class="text-on-surface-variant text-sm text-center mb-4">احصل على VRT بسعر مخفض قبل الإطلاق الرسمي</p>
 
-            <!-- بيانات السوق (معدلة) -->
+            <!-- بيانات السوق -->
             <div class="grid grid-cols-2 gap-2 mb-4">
                 <div class="market-card">
                     <div class="label">القيمة السوقية المتوقعة</div>
@@ -351,9 +362,13 @@
                 </div>
             </div>
 
+            <!-- سعر VRT الحالي (متحرك) -->
             <div class="bg-surface-container-low/50 rounded-xl p-3 text-center border border-white/5 mb-4">
                 <div class="text-on-surface-variant text-xs">سعر VRT الحالي</div>
                 <div class="text-2xl font-bold text-primary" id="presalePrice">0.1461 USDT</div>
+                <div class="text-xs mt-1" id="priceChangeIndicator">
+                    <span class="price-up">▲ +0.00%</span>
+                </div>
             </div>
 
             <!-- خطوات الشراء -->
@@ -370,7 +385,7 @@
                 <div class="bg-surface-container-low/30 rounded-xl p-3 border border-primary/10">
                     <div class="flex items-center gap-2 text-primary font-bold text-sm mb-1">
                         <span class="bg-primary/20 rounded-full w-6 h-6 flex items-center justify-center text-xs">2</span>
-                        قم بتأكيد معاملة الدفع عبر إرفاق صورة التحويل:
+                        قم بتأكيد معاملة الدفع:
                     </div>
                     <div class="space-y-2">
                         <div>
@@ -410,7 +425,9 @@
         </div>
     </div>
 
+    <!-- ================================ -->
     <!-- ===== 3. المهام ===== -->
+    <!-- ================================ -->
     <div class="tab-panel" id="tab-tasks">
         <div class="glass-panel">
             <h2 class="text-primary font-bold text-xl mb-3">📋 المهام اليومية</h2>
@@ -427,7 +444,80 @@
         </div>
     </div>
 
-    <!-- ===== 4. الإحالات ===== -->
+    <!-- ================================ -->
+    <!-- ===== 4. الإعلانات (Ads) ===== -->
+    <!-- ================================ -->
+    <div class="tab-panel" id="tab-ads">
+        <div class="glass-panel text-center">
+            <h2 class="text-primary font-bold text-xl mb-2">📺 مشاهدة الإعلانات</h2>
+            <p class="text-on-surface-variant text-sm mb-4">شاهد الإعلانات واكسب عملات VRT مجاناً</p>
+
+            <div class="bg-surface-container-low/30 rounded-xl p-4 mb-4 border border-white/5">
+                <div class="text-on-surface-variant text-xs">عدد الإعلانات المشاهدة</div>
+                <div class="text-3xl font-bold text-primary" id="adsWatchedCount">0</div>
+                <div class="text-xs text-on-surface-variant mt-1">كل <span class="text-primary font-bold">10</span> إعلانات = <span class="text-primary font-bold">1 VRT</span></div>
+            </div>
+
+            <div class="bg-surface-container-low/30 rounded-xl p-4 mb-4 border border-white/5">
+                <div class="text-on-surface-variant text-xs">المكافآت المحصودة</div>
+                <div class="text-2xl font-bold text-primary" id="adsEarnedVrt">0.00 VRT</div>
+            </div>
+
+            <!-- زر مشاهدة الإعلان (جاهز لربط AdsGram) -->
+            <button class="btn-primary w-full py-3 text-lg mb-2" id="watchAdBtn">📺 مشاهدة إعلان</button>
+            <div class="status-msg text-center" id="adsStatus"></div>
+
+            <div class="mt-2 bg-primary/5 rounded-xl p-3 border border-primary/10 text-center">
+                <span class="material-symbols-outlined text-primary align-middle">info</span>
+                <span class="text-on-surface-variant text-xs">سيتم ربط الإعلانات عبر منصة AdsGram قريباً</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================ -->
+    <!-- ===== 5. المحفظة (Wallet) ===== -->
+    <!-- ================================ -->
+    <div class="tab-panel" id="tab-wallet">
+        <div class="glass-panel">
+            <h2 class="text-primary font-bold text-xl mb-3 text-center">💰 محفظتك</h2>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-surface-container-low/30 p-4 rounded-xl text-center border border-white/5">
+                    <div class="text-on-surface-variant text-[10px]">رصيد VRT</div>
+                    <div class="text-2xl font-bold text-primary" id="walletVrt">0.0000</div>
+                </div>
+                <div class="bg-surface-container-low/30 p-4 rounded-xl text-center border border-white/5">
+                    <div class="text-on-surface-variant text-[10px]">رصيد USDT</div>
+                    <div class="text-2xl font-bold text-primary" id="walletUsdt">0.0000</div>
+                </div>
+                <div class="bg-surface-container-low/30 p-4 rounded-xl text-center border border-white/5 col-span-2">
+                    <div class="text-on-surface-variant text-[10px]">القيمة التقريبية بالدولار</div>
+                    <div class="text-2xl font-bold text-secondary-fixed" id="walletUsdValue">$0.00</div>
+                </div>
+                <div class="bg-surface-container-low/30 p-4 rounded-xl text-center border border-white/5 col-span-2">
+                    <div class="text-on-surface-variant text-[10px]">سعر VRT الحالي</div>
+                    <div class="text-xl font-bold text-primary" id="walletVrtPrice">0.1461 USDT</div>
+                </div>
+            </div>
+
+            <!-- السحب معطل -->
+            <div class="withdraw-disabled">
+                <h3 class="text-primary font-semibold text-sm mb-2">🏦 السحب</h3>
+                <div class="bg-surface-container-low/30 p-3 rounded-xl border border-white/5 text-center">
+                    <span class="material-symbols-outlined text-error text-2xl">lock</span>
+                    <p class="text-on-surface-variant text-sm mt-1">السحب متوقف حالياً حتى يتم إدراج العملة بشكل رسمي.</p>
+                    <div class="flex gap-2 justify-center mt-2 text-xs text-on-surface-variant">
+                        <span>🔹 عبر المحفظة</span>
+                        <span>🔹 عبر منصة بينانس</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================ -->
+    <!-- ===== 6. الإحالات ===== -->
+    <!-- ================================ -->
     <div class="tab-panel" id="tab-referrals">
         <div class="glass-panel text-center">
             <h2 class="text-primary font-bold text-xl mb-2">👥 الإحالات</h2>
@@ -455,42 +545,12 @@
         </div>
     </div>
 
-    <!-- ===== 5. الإعدادات ===== -->
+    <!-- ================================ -->
+    <!-- ===== 7. الإعدادات ===== -->
+    <!-- ================================ -->
     <div class="tab-panel" id="tab-settings">
         <div class="glass-panel">
-            <h2 class="text-primary font-bold text-xl mb-3">⚙️ الإعدادات والمحفظة</h2>
-
-            <!-- المحفظة -->
-            <div class="mb-4">
-                <h3 class="text-primary font-semibold text-sm mb-2">💰 محفظتك</h3>
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="bg-surface-container-low/30 p-3 rounded-xl text-center border border-white/5">
-                        <div class="text-on-surface-variant text-[10px]">رصيد VRT</div>
-                        <div class="text-xl font-bold text-primary" id="walletVrt">0.0000</div>
-                    </div>
-                    <div class="bg-surface-container-low/30 p-3 rounded-xl text-center border border-white/5">
-                        <div class="text-on-surface-variant text-[10px]">رصيد USDT</div>
-                        <div class="text-xl font-bold text-primary" id="walletUsdt">0.0000</div>
-                    </div>
-                    <div class="bg-surface-container-low/30 p-3 rounded-xl text-center border border-white/5 col-span-2">
-                        <div class="text-on-surface-variant text-[10px]">القيمة التقريبية بالدولار</div>
-                        <div class="text-xl font-bold text-secondary-fixed" id="walletUsdValue">$0.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- السحب معطل -->
-            <div class="mb-4 withdraw-disabled">
-                <h3 class="text-primary font-semibold text-sm mb-2">🏦 السحب</h3>
-                <div class="bg-surface-container-low/30 p-3 rounded-xl border border-white/5 text-center">
-                    <span class="material-symbols-outlined text-error">lock</span>
-                    <p class="text-on-surface-variant text-sm mt-1">السحب متوقف حالياً حتى يتم إدراج العملة بشكل رسمي.</p>
-                    <div class="flex gap-2 justify-center mt-2 text-xs text-on-surface-variant">
-                        <span>🔹 عبر المحفظة</span>
-                        <span>🔹 عبر منصة بينانس</span>
-                    </div>
-                </div>
-            </div>
+            <h2 class="text-primary font-bold text-xl mb-3">⚙️ الإعدادات</h2>
 
             <!-- التفضيلات -->
             <div class="mb-4">
@@ -533,7 +593,9 @@
         </div>
     </div>
 
-    <!-- ===== 6. الإدارة ===== -->
+    <!-- ================================ -->
+    <!-- ===== 8. الإدارة ===== -->
+    <!-- ================================ -->
     <div class="tab-panel" id="tab-admin">
         <div class="glass-panel">
             <h2 class="text-primary font-bold text-xl mb-3">🔐 لوحة الإدارة</h2>
@@ -582,31 +644,41 @@
 </main>
 
 <!-- ===== BOTTOM NAVIGATION ===== -->
-<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-low/80 backdrop-blur-2xl border-t border-primary-container/20 shadow-[0_-8px_32px_0_rgba(0,0,0,0.8)] flex justify-around items-center px-2 py-2 pb-safe">
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-low/80 backdrop-blur-2xl border-t border-primary-container/20 shadow-[0_-8px_32px_0_rgba(0,0,0,0.8)] flex justify-around items-center px-1 py-2 pb-safe overflow-x-auto">
     <button class="tab-btn flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200" data-tab="mining">
         <span class="material-symbols-outlined">memory</span>
-        <span class="text-[10px] font-bold mt-1">التعدين</span>
+        <span class="text-[8px] font-bold mt-1">التعدين</span>
     </button>
     <button class="tab-btn flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200" data-tab="presale">
         <span class="material-symbols-outlined">trending_up</span>
-        <span class="text-[10px] font-bold mt-1">الشراء</span>
+        <span class="text-[8px] font-bold mt-1">الشراء</span>
     </button>
     <button class="tab-btn flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200" data-tab="tasks">
         <span class="material-symbols-outlined">assignment_turned_in</span>
-        <span class="text-[10px] font-bold mt-1">المهام</span>
+        <span class="text-[8px] font-bold mt-1">المهام</span>
+    </button>
+    <button class="tab-btn flex flex-col items-center justify-center text-primary font-bold transition-colors active:scale-90 duration-200" data-tab="ads">
+        <span class="material-symbols-outlined">play_circle</span>
+        <span class="text-[8px] font-bold mt-1">الإعلانات</span>
+    </button>
+    <button class="tab-btn flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200" data-tab="wallet">
+        <span class="material-symbols-outlined">account_balance_wallet</span>
+        <span class="text-[8px] font-bold mt-1">المحفظة</span>
     </button>
     <button class="tab-btn flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200" data-tab="referrals">
         <span class="material-symbols-outlined">group</span>
-        <span class="text-[10px] font-bold mt-1">الإحالات</span>
+        <span class="text-[8px] font-bold mt-1">الإحالات</span>
     </button>
     <button class="tab-btn flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200" data-tab="settings">
         <span class="material-symbols-outlined">settings</span>
-        <span class="text-[10px] font-bold mt-1">الإعدادات</span>
+        <span class="text-[8px] font-bold mt-1">الإعدادات</span>
     </button>
 </nav>
 
 <!-- ===== JAVASCRIPT ===== -->
 <script>
+    // ==========================================
+    // 1. متغيرات عامة
     // ==========================================
     let currentUser = null;
     let miningInterval = null;
@@ -614,7 +686,125 @@
     let isNotifOn = false;
     let captchaAnswer = 7;
     let currentLang = 'ar';
+    let currentPrice = 0.1461;
+    let priceHistory = [];
+    let adsWatched = 0;
+    let adsEarnedVrt = 0;
 
+    // ==========================================
+    // 2. محاكاة تحرك السعر الحقيقي
+    // ==========================================
+    function simulatePriceMovement() {
+        // عشوائية مع ميل للصعود (موجة صعود)
+        const volatility = 0.0008;
+        const drift = 0.0001; // ميل للصعود
+        const change = (Math.random() - 0.45) * volatility + drift;
+        let newPrice = currentPrice + change;
+        newPrice = Math.max(0.1200, Math.min(0.1800, newPrice)); // حدود آمنة
+        currentPrice = newPrice;
+
+        // تحديث العرض
+        const priceEl = document.getElementById('presalePrice');
+        if (priceEl) {
+            priceEl.innerText = currentPrice.toFixed(4) + ' USDT';
+            // تأثير وميض
+            priceEl.classList.remove('price-flash');
+            void priceEl.offsetWidth;
+            priceEl.classList.add('price-flash');
+        }
+
+        // تحديث مؤشر التغير
+        const indicatorEl = document.getElementById('priceChangeIndicator');
+        if (indicatorEl) {
+            const changePercent = ((change / currentPrice) * 100);
+            if (changePercent > 0) {
+                indicatorEl.innerHTML = `<span class="price-up">▲ +${changePercent.toFixed(2)}%</span>`;
+            } else {
+                indicatorEl.innerHTML = `<span class="price-down">▼ ${changePercent.toFixed(2)}%</span>`;
+            }
+        }
+
+        // تحديث السعر في المحفظة
+        const walletPriceEl = document.getElementById('walletVrtPrice');
+        if (walletPriceEl) {
+            walletPriceEl.innerText = currentPrice.toFixed(4) + ' USDT';
+        }
+
+        // تحديث قيمة الدولار في المحفظة
+        updateWalletDisplay();
+
+        // حفظ السعر في LocalStorage لتتبعه
+        priceHistory.push({ price: currentPrice, time: Date.now() });
+        if (priceHistory.length > 100) priceHistory.shift();
+        try {
+            localStorage.setItem('vortex_price_history', JSON.stringify(priceHistory));
+        } catch (e) { /* تجاهل */ }
+    }
+
+    // بدء محاكاة السعر (تحديث كل 3 ثوانٍ)
+    setInterval(simulatePriceMovement, 3000);
+
+    // استعادة السعر المحفوظ
+    try {
+        const savedHistory = localStorage.getItem('vortex_price_history');
+        if (savedHistory) {
+            const history = JSON.parse(savedHistory);
+            if (history.length > 0) {
+                currentPrice = history[history.length - 1].price;
+            }
+        }
+    } catch (e) { /* تجاهل */ }
+
+    // ==========================================
+    // 3. نظام الإعلانات
+    // ==========================================
+    document.getElementById('watchAdBtn')?.addEventListener('click', async function() {
+        this.disabled = true;
+        this.innerText = '⏳ جاري تحميل الإعلان...';
+        const statusDiv = document.getElementById('adsStatus');
+
+        try {
+            // محاكاة مشاهدة الإعلان (سيتم ربطها بـ AdsGram لاحقاً)
+            statusDiv.innerHTML = '<span style="color:#f5c842;">📺 جاري مشاهدة الإعلان...</span>';
+
+            // محاكاة وقت مشاهدة الإعلان (5 ثوانٍ)
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
+            adsWatched += 1;
+            document.getElementById('adsWatchedCount').innerText = adsWatched;
+
+            // التحقق من المكافأة (كل 10 إعلانات = 1 VRT)
+            const earned = Math.floor(adsWatched / 10);
+            const pending = adsWatched % 10;
+            adsEarnedVrt = earned;
+
+            document.getElementById('adsEarnedVrt').innerText = adsEarnedVrt.toFixed(2) + ' VRT';
+
+            // إضافة العملات للمحفظة إذا كان هناك مكافأة جديدة
+            if (earned > 0 && currentUser) {
+                currentUser.balance_vrt = (currentUser.balance_vrt || 0) + earned;
+                // إعادة تعيين العداد بعد الصرف (نحتفظ بالباقي)
+                // ملاحظة: سنحتفظ بالـ earned في adsEarnedVrt ونعرضه كرصيد إضافي
+                // سيتم تحديث الرصيد الفعلي عبر السيرفر لاحقاً
+                updateUI(currentUser);
+                showToast(`✅ تم إضافة ${earned} VRT إلى محفظتك!`);
+            } else if (earned > 0) {
+                showToast(`✅ تم إضافة ${earned} VRT، سجل دخولك لرؤية الرصيد.`);
+            }
+
+            statusDiv.innerHTML = `<span style="color:#2ecc71;">✅ تم مشاهدة الإعلان! (${pending}/10 للوصول إلى 1 VRT)</span>`;
+            this.innerText = '📺 مشاهدة إعلان آخر';
+
+        } catch (e) {
+            statusDiv.innerHTML = '<span style="color:#ff6b6b;">❌ حدث خطأ، حاول مرة أخرى</span>';
+            this.innerText = '📺 مشاهدة إعلان';
+        }
+        this.disabled = false;
+    });
+
+    // ==========================================
+    // 4. عرض الإشعارات
+    // ==========================================
     function showToast(msg, isError = false) {
         const existing = document.querySelector('.toast-msg');
         if (existing) existing.remove();
@@ -625,6 +815,9 @@
         setTimeout(() => div.remove(), 4000);
     }
 
+    // ==========================================
+    // 5. كابتشا
+    // ==========================================
     function generateCaptcha() {
         const a = Math.floor(Math.random() * 9) + 1;
         const b = Math.floor(Math.random() * 9) + 1;
@@ -633,6 +826,9 @@
     }
     generateCaptcha();
 
+    // ==========================================
+    // 6. تبديل التبويبات
+    // ==========================================
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const tab = this.dataset.tab;
@@ -645,7 +841,8 @@
             if (tab === 'tasks') loadTasks();
             if (tab === 'referrals') loadReferrals();
             if (tab === 'presale') loadTransactionHistory();
-            if (tab === 'settings') updateWalletDisplay();
+            if (tab === 'wallet') updateWalletDisplay();
+            if (tab === 'ads') loadAdsData();
         });
     });
 
@@ -660,6 +857,9 @@
         });
     });
 
+    // ==========================================
+    // 7. نظام المصادقة
+    // ==========================================
     async function checkAuth() {
         try {
             const res = await fetch('/api/auth/me', { credentials: 'include' });
@@ -682,7 +882,7 @@
     function updateUI(user) {
         document.getElementById('headerBalance').innerText = (user.balance_vrt || 0).toFixed(2) + ' VRT';
         document.getElementById('miningBalance').innerText = (user.balance_vrt || 0).toFixed(4) + ' VRT';
-        const price = parseFloat(document.getElementById('presalePrice').innerText) || 0.1461;
+        const price = currentPrice || 0.1461;
         document.getElementById('miningBalanceUsd').innerText = ((user.balance_vrt || 0) * price).toFixed(2);
         if (user.referral_code) {
             document.getElementById('referralCodeDisplay').innerText = user.referral_code;
@@ -694,18 +894,49 @@
         }
         updateMiningStatus();
         updateWalletDisplay();
+        loadAdsData();
     }
 
     function updateWalletDisplay() {
         if (currentUser) {
             document.getElementById('walletVrt').innerText = (currentUser.balance_vrt || 0).toFixed(4);
             document.getElementById('walletUsdt').innerText = (currentUser.balance_usdt || 0).toFixed(4);
-            const price = parseFloat(document.getElementById('presalePrice').innerText) || 0.1461;
+            const price = currentPrice || 0.1461;
             const usdValue = (currentUser.balance_vrt || 0) * price;
             document.getElementById('walletUsdValue').innerText = '$' + usdValue.toFixed(2);
         }
     }
 
+    function loadAdsData() {
+        // استعادة بيانات الإعلانات من LocalStorage
+        try {
+            const saved = localStorage.getItem('vortex_ads_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                adsWatched = data.watched || 0;
+                adsEarnedVrt = data.earned || 0;
+            }
+        } catch (e) { /* تجاهل */ }
+        document.getElementById('adsWatchedCount').innerText = adsWatched;
+        document.getElementById('adsEarnedVrt').innerText = adsEarnedVrt.toFixed(2) + ' VRT';
+    }
+
+    // حفظ بيانات الإعلانات
+    function saveAdsData() {
+        try {
+            localStorage.setItem('vortex_ads_data', JSON.stringify({
+                watched: adsWatched,
+                earned: adsEarnedVrt
+            }));
+        } catch (e) { /* تجاهل */ }
+    }
+
+    // حفظ بعد كل مشاهدة
+    document.addEventListener('adsWatched', saveAdsData);
+
+    // ==========================================
+    // 8. تسجيل الدخول والتسجيل
+    // ==========================================
     document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
@@ -770,6 +1001,9 @@
         showToast('تم تسجيل الخروج');
     });
 
+    // ==========================================
+    // 9. نظام التعدين
+    // ==========================================
     async function updateMiningStatus() {
         try {
             const res = await fetch('/api/mining/status', { credentials: 'include' });
@@ -787,7 +1021,7 @@
             if (data.balance_vrt !== undefined) {
                 document.getElementById('miningBalance').innerText = data.balance_vrt.toFixed(4) + ' VRT';
                 document.getElementById('headerBalance').innerText = data.balance_vrt.toFixed(2) + ' VRT';
-                const price = parseFloat(document.getElementById('presalePrice').innerText) || 0.1461;
+                const price = currentPrice || 0.1461;
                 document.getElementById('miningBalanceUsd').innerText = (data.balance_vrt * price).toFixed(2);
                 updateWalletDisplay();
             }
@@ -864,6 +1098,9 @@
         }
     }
 
+    // ==========================================
+    // 10. الشراء المسبق
+    // ==========================================
     document.getElementById('copyAddressBtn')?.addEventListener('click', function() {
         const addr = document.getElementById('walletAddressDisplay').innerText;
         navigator.clipboard.writeText(addr).then(() => showToast('✅ تم نسخ العنوان'));
@@ -871,7 +1108,7 @@
 
     document.getElementById('presaleUsdtInput')?.addEventListener('input', function() {
         const usdt = parseFloat(this.value);
-        const price = parseFloat(document.getElementById('presalePrice').innerText) || 0.1461;
+        const price = currentPrice || 0.1461;
         const output = document.getElementById('presaleVtxOutput');
         if (!isNaN(usdt) && usdt > 0 && price > 0) {
             output.value = (usdt / price).toFixed(2);
@@ -952,6 +1189,9 @@
         } catch (e) { /* تجاهل */ }
     }
 
+    // ==========================================
+    // 11. المهام
+    // ==========================================
     async function loadTasks() {
         try {
             const res = await fetch('/api/tasks', { credentials: 'include' });
@@ -1026,6 +1266,9 @@
         } catch (e) { /* تجاهل */ }
     }
 
+    // ==========================================
+    // 12. الإحالات
+    // ==========================================
     async function loadReferrals() {
         try {
             const res = await fetch('/api/referrals', { credentials: 'include' });
@@ -1062,6 +1305,9 @@
         }
     });
 
+    // ==========================================
+    // 13. الإعدادات
+    // ==========================================
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const lang = this.dataset.lang;
@@ -1111,6 +1357,9 @@
         document.getElementById('notifToggle')?.click();
     }
 
+    // ==========================================
+    // 14. لوحة الإدارة
+    // ==========================================
     async function loadAdminData() {
         try {
             const res = await fetch('/admin/stats', { credentials: 'include' });
@@ -1212,6 +1461,7 @@
             const data = await res.json();
             if (data.success) {
                 showToast('✅ تم تحديث السعر إلى ' + price);
+                currentPrice = price;
                 document.getElementById('presalePrice').innerText = price + ' USDT';
                 document.getElementById('settingsPrice').innerText = '$' + price;
             } else {
@@ -1240,6 +1490,9 @@
         } catch (e) { showToast('⚠️ خطأ', true); }
     });
 
+    // ==========================================
+    // 15. تحديث تلقائي
+    // ==========================================
     async function autoUpdate() {
         if (document.getElementById('tab-mining').classList.contains('active')) {
             await updateMiningStatus();
@@ -1250,11 +1503,17 @@
         if (document.getElementById('tab-admin').classList.contains('active') && currentUser?.role === 'admin') {
             await loadAdminData();
         }
-        if (document.getElementById('tab-settings').classList.contains('active')) {
+        if (document.getElementById('tab-wallet').classList.contains('active')) {
             updateWalletDisplay();
+        }
+        if (document.getElementById('tab-ads').classList.contains('active')) {
+            loadAdsData();
         }
     }
 
+    // ==========================================
+    // 16. بدء التطبيق
+    // ==========================================
     document.addEventListener('DOMContentLoaded', async function() {
         await checkAuth();
         await updateMiningStatus();
@@ -1263,8 +1522,9 @@
             const res = await fetch('/admin/stats', { credentials: 'include' });
             const data = await res.json();
             if (data && data.vtx_price) {
-                document.getElementById('presalePrice').innerText = data.vtx_price + ' USDT';
-                document.getElementById('settingsPrice').innerText = '$' + data.vtx_price;
+                currentPrice = data.vtx_price;
+                document.getElementById('presalePrice').innerText = currentPrice + ' USDT';
+                document.getElementById('settingsPrice').innerText = '$' + currentPrice;
             }
             if (data && data.totalUsers !== undefined) {
                 document.getElementById('totalUsersDisplay').innerText = data.totalUsers || 0;
