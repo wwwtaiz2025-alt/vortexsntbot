@@ -10,13 +10,25 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
+const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
 // ==============================
-// 1. الإعدادات الأساسية
+// 1. إعدادات البوت (Telegram Bot)
+// ==============================
+const botToken = process.env.BOT_TOKEN;
+if (!botToken) {
+    console.error('❌ BOT_TOKEN غير موجود في متغيرات البيئة');
+    process.exit(1);
+}
+
+const bot = new TelegramBot(botToken, { polling: true });
+
+// ==============================
+// 2. الإعدادات الأساسية
 // ==============================
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -30,7 +42,7 @@ if (!fs.existsSync('uploads')) {
 }
 
 // ==============================
-// 2. التحقق من وجود index.html
+// 3. التحقق من وجود index.html
 // ==============================
 const indexPath = path.join(__dirname, 'index.html');
 if (!fs.existsSync(indexPath)) {
@@ -42,7 +54,7 @@ if (!fs.existsSync(indexPath)) {
 }
 
 // ==============================
-// 3. الاتصال بقاعدة البيانات
+// 4. الاتصال بقاعدة البيانات
 // ==============================
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -56,7 +68,7 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 // ==============================
-// 4. نماذج قاعدة البيانات
+// 5. نماذج قاعدة البيانات
 // ==============================
 const UserSchema = new mongoose.Schema({
     telegram_id: { type: Number, unique: false, sparse: true, default: null },
@@ -135,7 +147,7 @@ const Settings = mongoose.model('Settings', SettingsSchema);
 const ReferralEarning = mongoose.model('ReferralEarning', ReferralEarningSchema);
 
 // ==============================
-// 5. دوال مساعدة
+// 6. دوال مساعدة
 // ==============================
 
 function generateReferralCode() {
@@ -159,7 +171,119 @@ async function getUserFromRequest(req) {
 }
 
 // ==============================
-// 6. إنشاء الإعدادات الافتراضية
+// 7. أوامر البوت (Telegram Bot Commands)
+// ==============================
+
+const APP_URL = process.env.APP_URL || 'https://vortex-snt-bot.onrender.com';
+
+bot.onText(/\/start/, async (msg) => {
+    const chatId = msg.chat.id;
+    const text = `
+🚀 *مرحباً بك في Vortex VRT!*
+
+استعد لتعدين وشراء العملة الرقمية Vortex (VRT) قبل الإدراج الرسمي.
+
+✨ *ما الذي تنتظره؟*
+- ⛏️ تعدين يومي مجاني
+- 💰 محفظة رقمية آمنة
+- 💎 شراء العملة قبل الإدراج
+- 👥 إحالات ومكافآت
+- 📺 مشاهدة إعلانات لكسب عملات مجانية
+
+🔗 *افتح التطبيق الآن:*
+[اضغط هنا لفتح Vortex](${APP_URL}/app)
+    `;
+    bot.sendMessage(chatId, text, { 
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: '🚀 فتح التطبيق', web_app: { url: `${APP_URL}/app` } }],
+                [{ text: '📖 المساعدة', callback_data: 'help' }]
+            ]
+        }
+    });
+});
+
+bot.onText(/\/mine/, async (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, '⛏️ *التعدين اليدوي*\n\nاضغط على الزر أدناه لبدء التعدين.', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: '⚡ ابدأ التعدين', web_app: { url: `${APP_URL}/app` } }]
+            ]
+        }
+    });
+});
+
+bot.onText(/\/wallet/, async (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, '💰 *محفظتك الرقمية*\n\nلعرض رصيدك وإدارة أموالك، افتح التطبيق:', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: '📊 عرض المحفظة', web_app: { url: `${APP_URL}/app` } }]
+            ]
+        }
+    });
+});
+
+bot.onText(/\/buy/, async (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, '💎 *شراء العملة قبل الإدراج*\n\nاحصل على VRT بسعر مخفض قبل الإطلاق الرسمي.', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: '🛒 شراء الآن', web_app: { url: `${APP_URL}/app` } }]
+            ]
+        }
+    });
+});
+
+bot.onText(/\/referral/, async (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, '👥 *الإحالات*\n\nادعُ أصدقاءك واربح مكافآت تصل إلى 10% من أرباحهم.', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: '📤 مشاركة الرابط', web_app: { url: `${APP_URL}/app` } }]
+            ]
+        }
+    });
+});
+
+bot.onText(/\/help/, async (msg) => {
+    const chatId = msg.chat.id;
+    const helpText = `
+📖 *قائمة الأوامر المتاحة:*
+
+/start - بدء البوت والترحيب
+/mine - التعدين اليدوي
+/wallet - عرض المحفظة
+/buy - شراء العملة قبل الإدراج
+/referral - الإحالات والمكافآت
+/help - عرض هذه المساعدة
+
+🔗 *رابط التطبيق:*
+${APP_URL}/app
+    `;
+    bot.sendMessage(chatId, helpText, { parse_mode: 'Markdown' });
+});
+
+// ردود على الأزرار (Callback Queries)
+bot.on('callback_query', async (query) => {
+    const chatId = query.message.chat.id;
+    const data = query.data;
+
+    if (data === 'help') {
+        bot.sendMessage(chatId, '📖 *المساعدة*\n\nاستخدم الأوامر التالية للتنقل:\n/start - ترحيب\n/mine - تعدين\n/wallet - محفظة\n/buy - شراء\n/referral - إحالات\n/help - مساعدة', { parse_mode: 'Markdown' });
+    }
+
+    bot.answerCallbackQuery(query.id);
+});
+
+// ==============================
+// 8. إنشاء الإعدادات الافتراضية
 // ==============================
 async function initSettings() {
     const settings = await Settings.findById('main_config');
@@ -172,7 +296,7 @@ async function initSettings() {
 initSettings();
 
 // ==============================
-// 7. API المصادقة
+// 9. API المصادقة
 // ==============================
 app.post('/api/auth/register', async (req, res) => {
     try {
@@ -313,7 +437,7 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // ==============================
-// 8. نظام التعدين
+// 10. نظام التعدين
 // ==============================
 app.get('/api/mining/status', async (req, res) => {
     try {
@@ -393,7 +517,7 @@ app.post('/api/mining/start', async (req, res) => {
 });
 
 // ==============================
-// 9. الشراء المسبق
+// 11. الشراء المسبق
 // ==============================
 
 const upload = multer({
@@ -415,10 +539,10 @@ app.post('/api/purchase/submit', upload.single('screenshot'), async (req, res) =
         const { amount_usdt, txid } = req.body;
         const screenshot = req.file;
 
-        if (!amount_usdt || amount_usdt < 10 || amount_usdt > 5000) {
-            return res.json({ success: false, message: '⚠️ المبلغ بين 10 و 5000 USDT' });
+        if (!amount_usdt || amount_usdt < 3 || amount_usdt > 500) {
+            return res.json({ success: false, message: '⚠️ المبلغ بين 3 و 500 USDT' });
         }
-        if (!txid || txid.length < 10) {
+        if (!txid || txid.length < 5) {
             return res.json({ success: false, message: '⚠️ أدخل رقم معاملة صحيح' });
         }
 
@@ -470,7 +594,7 @@ app.get('/api/purchase/history', async (req, res) => {
 });
 
 // ==============================
-// 10. المهام
+// 12. المهام
 // ==============================
 app.get('/api/tasks', async (req, res) => {
     try {
@@ -482,7 +606,7 @@ app.get('/api/tasks', async (req, res) => {
 });
 
 // ==============================
-// 11. الإحالات
+// 13. الإحالات
 // ==============================
 app.get('/api/referrals', async (req, res) => {
     try {
@@ -512,7 +636,7 @@ app.get('/api/referrals', async (req, res) => {
 });
 
 // ==============================
-// 11.5. الإعلانات (Ads) ⭐ NEW
+// 13.5. الإعلانات (Ads)
 // ==============================
 app.post('/api/ads/watch', async (req, res) => {
     try {
@@ -539,7 +663,7 @@ app.post('/api/ads/watch', async (req, res) => {
 });
 
 // ==============================
-// 12. لوحة الإدارة
+// 14. لوحة الإدارة
 // ==============================
 app.get('/admin/stats', async (req, res) => {
     try {
@@ -684,13 +808,14 @@ app.post('/admin/broadcast', async (req, res) => {
 });
 
 // ==============================
-// 13. الصفحة الرئيسية (Mini-App)
+// 15. الصفحة الرئيسية (Mini-App)
 // ==============================
 app.get('/app', async (req, res) => {
     try {
         const user = await getUserFromRequest(req);
         const settings = await Settings.findById('main_config');
 
+        // التحقق من وجود الملف قبل القراءة
         if (!fs.existsSync(indexPath)) {
             return res.status(500).send('❌ ملف index.html غير موجود');
         }
@@ -726,14 +851,14 @@ app.get('/app', async (req, res) => {
 });
 
 // ==============================
-// 14. المسار الرئيسي
+// 16. المسار الرئيسي
 // ==============================
 app.get('/', (req, res) => {
     res.send('🚀 مشروع Vortex يعمل بنجاح!');
 });
 
 // ==============================
-// 15. تشغيل السيرفر
+// 17. تشغيل السيرفر
 // ==============================
 app.listen(PORT, () => {
     console.log(`✅ سيرفر Vortex يعمل على المنفذ ${PORT}`);
