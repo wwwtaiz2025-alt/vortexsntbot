@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
     <style>
+        /* ===== جميع الأنماط السابقة (نفسها) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0A0A0A;
@@ -267,61 +268,6 @@
         }
         .admin-purchase-item .actions .approve { background: #2ecc71; color: #000; }
         .admin-purchase-item .actions .reject { background: #e74c3c; color: #fff; }
-        /* حاوية الإعلان */
-        #adContainer {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            background: rgba(0,0,0,0.92);
-            backdrop-filter: blur(8px);
-        }
-        #adContainer .ad-box {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 16px;
-        }
-        #adContainer .ad-box .close-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            z-index: 1001;
-            background: #ff4444;
-            border: none;
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        #adContainer .ad-box .ad-frame {
-            width: 95%;
-            max-width: 420px;
-            height: 75%;
-            background: #0A0A0A;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        #adContainer .ad-box .ad-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        #adContainer .ad-box .ad-hint {
-            color: #8a7e6b;
-            font-size: 12px;
-            margin-top: 12px;
-        }
         @media (max-width: 640px) {
             .glass-panel { padding: 0.8rem; }
             .tab-btn { font-size: 0.6rem; padding: 0.2rem 0.4rem; }
@@ -329,7 +275,6 @@
             .market-card .value { font-size: 0.8rem; }
             .real-coin-lg { width: 60px; height: 60px; font-size: 18px; }
             .presale-input-group input { font-size: 0.85rem; padding: 0.3rem 0.2rem; }
-            #adContainer .ad-box .ad-frame { height: 60%; }
         }
     </style>
 </head>
@@ -569,7 +514,7 @@
     </div>
 
     <!-- ================================ -->
-    <!-- ===== 4. الإعلانات (مع AdsGram) ===== -->
+    <!-- ===== 4. الإعلانات ===== -->
     <!-- ================================ -->
     <div class="tab-panel" id="tab-ads">
         <div class="glass-panel text-center">
@@ -595,17 +540,6 @@
                 <span class="material-symbols-outlined text-primary align-middle text-sm">info</span>
                 <span class="text-on-surface-variant text-[10px]">سيتم ربط الإعلانات عبر منصة AdsGram قريباً</span>
             </div>
-        </div>
-    </div>
-
-    <!-- ===== حاوية الإعلان ===== -->
-    <div id="adContainer">
-        <div class="ad-box">
-            <button class="close-btn" onclick="closeAd(false)">✕ إغلاق</button>
-            <div class="ad-frame">
-                <iframe src="https://adsgram.ai/embed/38042" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-            <p class="ad-hint">⏳ انتظر انتهاء الإعلان للحصول على المكافأة</p>
         </div>
     </div>
 
@@ -1000,24 +934,23 @@
     }
 
     // ==========================================
-    // نظام الإعلانات (مع AdsGram)
+    // نظام الإعلانات (مع فتح في متصفح خارجي)
     // ==========================================
     function openAd() {
-        document.getElementById('adContainer').style.display = 'flex';
-        // مؤقت احتياطي في حال لم يكتمل الإعلان (8 ثوانٍ)
+        const adUrl = 'https://adsgram.ai/embed/38042';
+        window.open(adUrl, '_system');
+        showToast('📺 تم فتح الإعلان في المتصفح، انتظر انتهاءه', false);
         adTimer = setTimeout(() => {
             closeAd(true);
-        }, 8000);
+        }, 60000); // 60 ثانية
     }
 
     function closeAd(completed = false) {
-        document.getElementById('adContainer').style.display = 'none';
         if (adTimer) {
             clearTimeout(adTimer);
             adTimer = null;
         }
         if (completed) {
-            // إضافة المكافأة
             adsWatched += 1;
             document.getElementById('adsWatchedCount').innerText = adsWatched;
 
@@ -1047,7 +980,7 @@
         this.disabled = true;
         this.innerText = '⏳ جاري التحميل...';
         const statusDiv = document.getElementById('adsStatus');
-        statusDiv.innerHTML = '<span style="color:#f5c842;">📺 جاري تحميل الإعلان...</span>';
+        statusDiv.innerHTML = '<span style="color:#f5c842;">📺 جاري فتح الإعلان في المتصفح...</span>';
         openAd();
         this.disabled = false;
         this.innerText = '📺 مشاهدة إعلان آخر';
